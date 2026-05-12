@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Auto_Loot_RF_by_Yasir_Haq
@@ -11,10 +12,10 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         private readonly Timer _timerLoot     = new Timer { Interval = 150 };
         private readonly Timer _timerKillLoot = new Timer { Interval = 150 };
 
-        private IntPtr _hwnd;
-        private string _attackKey;
-        private string _lootKey;
-        private int    _clickX, _clickY;
+        private IntPtr   _hwnd;
+        private string[] _attackKeys;
+        private string   _lootKey;
+        private int    _clickX, _clickY, _keyDelay;
         private int    _phase, _phaseTicks, _attackTicks, _lootTicks;
 
         public LootBot()
@@ -32,15 +33,16 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             _timerLoot.Start();
         }
 
-        public void StartKillLoot(IntPtr hwnd, string attackKey, string lootKey,
-                                   int killSec, int lootSec, int clickX, int clickY)
+        public void StartKillLoot(IntPtr hwnd, string[] attackKeys, string lootKey,
+                                   int killSec, int lootSec, int clickX, int clickY, int keyDelay)
         {
             Stop();
             _hwnd        = hwnd;
-            _attackKey   = attackKey;
+            _attackKeys  = attackKeys;
             _lootKey     = lootKey;
             _clickX      = clickX;
             _clickY      = clickY;
+            _keyDelay    = keyDelay;
             _attackTicks = Math.Max(1, killSec * 1000 / 150);
             _lootTicks   = Math.Max(1, lootSec * 1000 / 150);
             _phase       = 0;
@@ -73,7 +75,20 @@ namespace Auto_Loot_RF_by_Yasir_Haq
                     _phase      = 1;
                     break;
                 case 1:
-                    InputSender.SendKey(_hwnd, _attackKey);
+                    var hwnd   = _hwnd;
+                    var keys   = _attackKeys;
+                    var delay  = _keyDelay;
+                    var cx     = _clickX;
+                    var cy     = _clickY;
+                    Task.Run(async () =>
+                    {
+                        foreach (var key in keys)
+                        {
+                            if (string.IsNullOrWhiteSpace(key)) continue;
+                            InputSender.SendAttackAction(hwnd, key, cx, cy);
+                            if (delay > 0) await Task.Delay(delay);
+                        }
+                    });
                     if (++_phaseTicks >= _attackTicks) { _phaseTicks = 0; _phase = 2; }
                     break;
                 case 2:

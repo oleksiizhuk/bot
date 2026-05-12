@@ -11,13 +11,48 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         [DllImport("user32.dll")] public static extern bool   IsWindowVisible(IntPtr hWnd);
         [DllImport("user32.dll")] public static extern uint   GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
         [DllImport("user32.dll")] public static extern bool   SetCursorPos(int X, int Y);
+        [DllImport("user32.dll")] public static extern bool   GetCursorPos(out POINT lpPoint);
+        [DllImport("user32.dll")] public static extern uint   SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
         [DllImport("user32.dll")] public static extern void   mouse_event(uint dwFlags, int dx, int dy, uint dwData, int dwExtraInfo);
 
         public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
-        public const uint WM_KEYDOWN           = 0x0100;
-        public const uint WM_KEYUP             = 0x0101;
-        public const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
-        public const uint MOUSEEVENTF_LEFTUP   = 0x0004;
+        // ── Structs for SendInput ─────────────────────────────────────────
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT { public int X; public int Y; }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MOUSEINPUT
+        {
+            public int    dx, dy;
+            public uint   mouseData;
+            public uint   dwFlags;
+            public uint   time;
+            public IntPtr dwExtraInfo;
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct INPUT_UNION
+        {
+            [FieldOffset(0)] public MOUSEINPUT mi;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct INPUT
+        {
+            public uint       type;   // 0 = mouse
+            public INPUT_UNION u;
+        }
+
+        // ── Constants ────────────────────────────────────────────────────
+        public const uint INPUT_MOUSE = 0;
+
+        public const uint WM_KEYDOWN  = 0x0100;
+        public const uint WM_KEYUP    = 0x0101;
+
+        public const uint MOUSEEVENTF_LEFTDOWN  = 0x0002;
+        public const uint MOUSEEVENTF_LEFTUP    = 0x0004;
+        public const uint MOUSEEVENTF_RIGHTDOWN = 0x0008;
+        public const uint MOUSEEVENTF_RIGHTUP   = 0x0010;
     }
 }

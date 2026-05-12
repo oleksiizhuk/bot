@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/mnt/c/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe \"Auto Loot RF by Yasir Haq.sln\" /p:Configuration=Release)",
+      "Bash(grep -n '\\\\$\"' \"/mnt/c/Users/Anna/OneDrive/Desktop/auto-loot/Auto_Loot_RF_Online-master/Auto Loot RF by Yasir Haq/Form1.cs\")"
+    ]
+  }
+}

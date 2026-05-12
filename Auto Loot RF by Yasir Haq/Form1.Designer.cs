@@ -30,8 +30,14 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.labelCoordY        = new System.Windows.Forms.Label();
             this.numericTargetY     = new System.Windows.Forms.NumericUpDown();
             this.buttonPickCoords   = new System.Windows.Forms.Button();
-            this.labelAttackKey     = new System.Windows.Forms.Label();
-            this.textBoxAttackKey = new System.Windows.Forms.TextBox();
+            this.labelAttackKey   = new System.Windows.Forms.Label();
+            this.textBoxAttack1   = new System.Windows.Forms.TextBox();
+            this.textBoxAttack2   = new System.Windows.Forms.TextBox();
+            this.textBoxAttack3   = new System.Windows.Forms.TextBox();
+            this.textBoxAttack4   = new System.Windows.Forms.TextBox();
+            this.textBoxAttack5   = new System.Windows.Forms.TextBox();
+            this.labelKeyDelay    = new System.Windows.Forms.Label();
+            this.numericKeyDelay  = new System.Windows.Forms.NumericUpDown();
             this.labelLootKey     = new System.Windows.Forms.Label();
             this.textBoxLootKey   = new System.Windows.Forms.TextBox();
 
@@ -52,6 +58,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             ((System.ComponentModel.ISupportInitialize)(this.numericLootTime)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericTargetX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericTargetY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericKeyDelay)).BeginInit();
             this.panelHeader.SuspendLayout();
             this.panelKeys.SuspendLayout();
             this.panelTiming.SuspendLayout();
@@ -61,7 +68,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
 
             // ── panelHeader (y=0, h=62) ──────────────────────────────────
             this.panelHeader.Location = new System.Drawing.Point(0, 0);
-            this.panelHeader.Size     = new System.Drawing.Size(460, 62);
+            this.panelHeader.Size     = new System.Drawing.Size(500, 62);
             this.panelHeader.Controls.Add(this.labelTitle);
             this.panelHeader.Controls.Add(this.labelSubtitle);
 
@@ -77,9 +84,9 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.labelSubtitle.Text      = "RF Online Automation Tool";
             this.labelSubtitle.Font      = new System.Drawing.Font("Segoe UI", 8.25F);
 
-            // ── panelKeys (y=72, h=88) ───────────────────────────────────
-            this.panelKeys.Location = new System.Drawing.Point(10, 72);
-            this.panelKeys.Size     = new System.Drawing.Size(440, 88);
+            // ── panelKeys (y=65, h=215) ──────────────────────────────────
+            this.panelKeys.Location = new System.Drawing.Point(10, 65);
+            this.panelKeys.Size     = new System.Drawing.Size(480, 215);
             this.panelKeys.Controls.Add(this.labelKeysSec);
             this.panelKeys.Controls.Add(this.labelTargetCoords);
             this.panelKeys.Controls.Add(this.labelCoordX);
@@ -88,7 +95,13 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.panelKeys.Controls.Add(this.numericTargetY);
             this.panelKeys.Controls.Add(this.buttonPickCoords);
             this.panelKeys.Controls.Add(this.labelAttackKey);
-            this.panelKeys.Controls.Add(this.textBoxAttackKey);
+            this.panelKeys.Controls.Add(this.textBoxAttack1);
+            this.panelKeys.Controls.Add(this.textBoxAttack2);
+            this.panelKeys.Controls.Add(this.textBoxAttack3);
+            this.panelKeys.Controls.Add(this.textBoxAttack4);
+            this.panelKeys.Controls.Add(this.textBoxAttack5);
+            this.panelKeys.Controls.Add(this.labelKeyDelay);
+            this.panelKeys.Controls.Add(this.numericKeyDelay);
             this.panelKeys.Controls.Add(this.labelLootKey);
             this.panelKeys.Controls.Add(this.textBoxLootKey);
 
@@ -97,18 +110,18 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.labelKeysSec.Text     = "KEY BINDINGS";
             this.labelKeysSec.Font     = new System.Drawing.Font("Segoe UI", 7.5F, System.Drawing.FontStyle.Bold);
 
-            // Click coords (replaces Target Key)
+            // Click coords
             this.labelTargetCoords.AutoSize = true;
-            this.labelTargetCoords.Location = new System.Drawing.Point(12, 30);
+            this.labelTargetCoords.Location = new System.Drawing.Point(12, 22);
             this.labelTargetCoords.Text     = "Click Coords";
             this.labelTargetCoords.Font     = new System.Drawing.Font("Segoe UI", 8F);
 
             this.labelCoordX.AutoSize = true;
-            this.labelCoordX.Location = new System.Drawing.Point(12, 54);
+            this.labelCoordX.Location = new System.Drawing.Point(12, 46);
             this.labelCoordX.Text     = "X";
             this.labelCoordX.Font     = new System.Drawing.Font("Segoe UI", 8F);
 
-            this.numericTargetX.Location = new System.Drawing.Point(24, 50);
+            this.numericTargetX.Location = new System.Drawing.Point(24, 42);
             this.numericTargetX.Size     = new System.Drawing.Size(52, 22);
             this.numericTargetX.Minimum  = 0;
             this.numericTargetX.Maximum  = 7680;
@@ -116,18 +129,18 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.numericTargetX.Font     = new System.Drawing.Font("Segoe UI", 9F);
 
             this.labelCoordY.AutoSize = true;
-            this.labelCoordY.Location = new System.Drawing.Point(82, 54);
+            this.labelCoordY.Location = new System.Drawing.Point(82, 46);
             this.labelCoordY.Text     = "Y";
             this.labelCoordY.Font     = new System.Drawing.Font("Segoe UI", 8F);
 
-            this.numericTargetY.Location = new System.Drawing.Point(94, 50);
+            this.numericTargetY.Location = new System.Drawing.Point(94, 42);
             this.numericTargetY.Size     = new System.Drawing.Size(52, 22);
             this.numericTargetY.Minimum  = 0;
             this.numericTargetY.Maximum  = 4320;
             this.numericTargetY.Value    = 540;
             this.numericTargetY.Font     = new System.Drawing.Font("Segoe UI", 9F);
 
-            this.buttonPickCoords.Location  = new System.Drawing.Point(152, 48);
+            this.buttonPickCoords.Location  = new System.Drawing.Point(152, 40);
             this.buttonPickCoords.Size      = new System.Drawing.Size(44, 26);
             this.buttonPickCoords.Text      = "Pick";
             this.buttonPickCoords.Font      = new System.Drawing.Font("Segoe UI", 8F);
@@ -135,29 +148,68 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.buttonPickCoords.Cursor    = System.Windows.Forms.Cursors.Hand;
             this.buttonPickCoords.Click    += new System.EventHandler(this.buttonPickCoords_Click);
 
+            // Pick button ends at y≈66; Attack Sequence starts 100px below → y=166
             this.labelAttackKey.AutoSize = true;
-            this.labelAttackKey.Location = new System.Drawing.Point(222, 30);
-            this.labelAttackKey.Text     = "Attack Key";
+            this.labelAttackKey.Location = new System.Drawing.Point(12, 166);
+            this.labelAttackKey.Text     = "Attack Sequence  (RMB · LMB · F1 ...)";
             this.labelAttackKey.Font     = new System.Drawing.Font("Segoe UI", 8F);
-            this.textBoxAttackKey.Location  = new System.Drawing.Point(222, 50);
-            this.textBoxAttackKey.Size      = new System.Drawing.Size(90, 24);
-            this.textBoxAttackKey.Text      = "F1";
-            this.textBoxAttackKey.Font      = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.textBoxAttackKey.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+
+            // 5 attack boxes: 50px wide, 6px gap → x=12,68,124,180,236
+            this.textBoxAttack1.Location  = new System.Drawing.Point(12,  184);
+            this.textBoxAttack1.Size      = new System.Drawing.Size(50, 24);
+            this.textBoxAttack1.Text      = "RMB";
+            this.textBoxAttack1.Font      = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.textBoxAttack1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+
+            this.textBoxAttack2.Location  = new System.Drawing.Point(68,  184);
+            this.textBoxAttack2.Size      = new System.Drawing.Size(50, 24);
+            this.textBoxAttack2.Text      = "F1";
+            this.textBoxAttack2.Font      = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.textBoxAttack2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+
+            this.textBoxAttack3.Location  = new System.Drawing.Point(124, 184);
+            this.textBoxAttack3.Size      = new System.Drawing.Size(50, 24);
+            this.textBoxAttack3.Text      = "F2";
+            this.textBoxAttack3.Font      = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.textBoxAttack3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+
+            this.textBoxAttack4.Location  = new System.Drawing.Point(180, 184);
+            this.textBoxAttack4.Size      = new System.Drawing.Size(50, 24);
+            this.textBoxAttack4.Text      = "";
+            this.textBoxAttack4.Font      = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.textBoxAttack4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+
+            this.textBoxAttack5.Location  = new System.Drawing.Point(236, 184);
+            this.textBoxAttack5.Size      = new System.Drawing.Size(50, 24);
+            this.textBoxAttack5.Text      = "";
+            this.textBoxAttack5.Font      = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.textBoxAttack5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+
+            this.labelKeyDelay.AutoSize = true;
+            this.labelKeyDelay.Location = new System.Drawing.Point(296, 166);
+            this.labelKeyDelay.Text     = "Delay (ms)";
+            this.labelKeyDelay.Font     = new System.Drawing.Font("Segoe UI", 8F);
+            this.numericKeyDelay.Location = new System.Drawing.Point(296, 184);
+            this.numericKeyDelay.Size     = new System.Drawing.Size(64, 24);
+            this.numericKeyDelay.Minimum  = 0;
+            this.numericKeyDelay.Maximum  = 2000;
+            this.numericKeyDelay.Value    = 0;
+            this.numericKeyDelay.Increment = 50;
+            this.numericKeyDelay.Font     = new System.Drawing.Font("Segoe UI", 9F);
 
             this.labelLootKey.AutoSize = true;
-            this.labelLootKey.Location = new System.Drawing.Point(334, 30);
+            this.labelLootKey.Location = new System.Drawing.Point(370, 166);
             this.labelLootKey.Text     = "Loot Key";
             this.labelLootKey.Font     = new System.Drawing.Font("Segoe UI", 8F);
-            this.textBoxLootKey.Location  = new System.Drawing.Point(334, 50);
+            this.textBoxLootKey.Location  = new System.Drawing.Point(370, 184);
             this.textBoxLootKey.Size      = new System.Drawing.Size(90, 24);
             this.textBoxLootKey.Text      = "X";
             this.textBoxLootKey.Font      = new System.Drawing.Font("Segoe UI", 9.5F);
             this.textBoxLootKey.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 
-            // ── panelTiming (y=170, h=70) ────────────────────────────────
-            this.panelTiming.Location = new System.Drawing.Point(10, 170);
-            this.panelTiming.Size     = new System.Drawing.Size(440, 70);
+            // ── panelTiming (y=290, h=70) ────────────────────────────────
+            this.panelTiming.Location = new System.Drawing.Point(10, 290);
+            this.panelTiming.Size     = new System.Drawing.Size(480, 70);
             this.panelTiming.Controls.Add(this.labelTimingSec);
             this.panelTiming.Controls.Add(this.labelKillTime);
             this.panelTiming.Controls.Add(this.numericKillTime);
@@ -179,7 +231,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.numericKillTime.Size     = new System.Drawing.Size(72, 24);
             this.numericKillTime.Minimum  = 1;
             this.numericKillTime.Maximum  = 60;
-            this.numericKillTime.Value    = 5;
+            this.numericKillTime.Value    = 10;
             this.numericKillTime.Font     = new System.Drawing.Font("Segoe UI", 9F);
             this.labelKillUnit.AutoSize = true;
             this.labelKillUnit.Location = new System.Drawing.Point(88, 50);
@@ -201,43 +253,43 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.labelLootUnit.Text     = "sec";
             this.labelLootUnit.Font     = new System.Drawing.Font("Segoe UI", 8.25F);
 
-            // ── panelButtons (y=250, h=68) ───────────────────────────────
-            this.panelButtons.Location = new System.Drawing.Point(10, 250);
-            this.panelButtons.Size     = new System.Drawing.Size(440, 68);
+            // ── panelButtons (y=370, h=68) ───────────────────────────────
+            this.panelButtons.Location = new System.Drawing.Point(10, 370);
+            this.panelButtons.Size     = new System.Drawing.Size(480, 68);
             this.panelButtons.Controls.Add(this.buttonLoot);
             this.panelButtons.Controls.Add(this.buttonKillLoot);
 
             this.buttonLoot.Location  = new System.Drawing.Point(12, 13);
-            this.buttonLoot.Size      = new System.Drawing.Size(196, 42);
+            this.buttonLoot.Size      = new System.Drawing.Size(216, 42);
             this.buttonLoot.Text      = "  START LOOT";
             this.buttonLoot.Font      = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.buttonLoot.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonLoot.Cursor    = System.Windows.Forms.Cursors.Hand;
             this.buttonLoot.Click    += new System.EventHandler(this.buttonLoot_Click);
 
-            this.buttonKillLoot.Location  = new System.Drawing.Point(232, 13);
-            this.buttonKillLoot.Size      = new System.Drawing.Size(196, 42);
+            this.buttonKillLoot.Location  = new System.Drawing.Point(252, 13);
+            this.buttonKillLoot.Size      = new System.Drawing.Size(216, 42);
             this.buttonKillLoot.Text      = "  KILL + LOOT";
             this.buttonKillLoot.Font      = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.buttonKillLoot.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonKillLoot.Cursor    = System.Windows.Forms.Cursors.Hand;
             this.buttonKillLoot.Click    += new System.EventHandler(this.buttonKillLoot_Click);
 
-            // ── panelStatus (y=328, h=44) ────────────────────────────────
-            this.panelStatus.Location = new System.Drawing.Point(0, 328);
-            this.panelStatus.Size     = new System.Drawing.Size(460, 44);
+            // ── panelStatus (y=448, h=44) ────────────────────────────────
+            this.panelStatus.Location = new System.Drawing.Point(0, 448);
+            this.panelStatus.Size     = new System.Drawing.Size(500, 44);
             this.panelStatus.Controls.Add(this.labelStatus);
 
             this.labelStatus.AutoSize  = false;
             this.labelStatus.Location  = new System.Drawing.Point(16, 13);
-            this.labelStatus.Size      = new System.Drawing.Size(428, 18);
+            this.labelStatus.Size      = new System.Drawing.Size(468, 18);
             this.labelStatus.Text      = "●  Ready  —  press Start to begin";
             this.labelStatus.Font      = new System.Drawing.Font("Segoe UI", 9F);
 
             // ── Form ─────────────────────────────────────────────────────
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode       = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize          = new System.Drawing.Size(460, 372);
+            this.ClientSize          = new System.Drawing.Size(500, 492);
             this.FormBorderStyle     = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox         = false;
             this.Name                = "Form1";
@@ -263,6 +315,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             ((System.ComponentModel.ISupportInitialize)(this.numericLootTime)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericTargetX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericTargetY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericKeyDelay)).EndInit();
             this.ResumeLayout(false);
         }
 
@@ -281,7 +334,13 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         private System.Windows.Forms.NumericUpDown  numericTargetY;
         private System.Windows.Forms.Button         buttonPickCoords;
         private System.Windows.Forms.Label          labelAttackKey;
-        private System.Windows.Forms.TextBox        textBoxAttackKey;
+        private System.Windows.Forms.TextBox        textBoxAttack1;
+        private System.Windows.Forms.TextBox        textBoxAttack2;
+        private System.Windows.Forms.TextBox        textBoxAttack3;
+        private System.Windows.Forms.TextBox        textBoxAttack4;
+        private System.Windows.Forms.TextBox        textBoxAttack5;
+        private System.Windows.Forms.Label          labelKeyDelay;
+        private System.Windows.Forms.NumericUpDown  numericKeyDelay;
         private System.Windows.Forms.Label          labelLootKey;
         private System.Windows.Forms.TextBox        textBoxLootKey;
         private System.Windows.Forms.Label          labelTimingSec;

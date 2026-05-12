@@ -65,21 +65,22 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             }
 
             foreach (var l in new Label[] { labelTargetCoords, labelCoordX, labelCoordY,
-                                             labelAttackKey, labelLootKey,
+                                             labelAttackKey, labelKeyDelay, labelLootKey,
                                              labelKillTime, labelKillUnit, labelLootTime, labelLootUnit })
             {
                 l.ForeColor = C_DIM;
                 l.BackColor = Color.Transparent;
             }
 
-            foreach (var tb in new TextBox[] { textBoxAttackKey, textBoxLootKey })
+            foreach (var tb in new TextBox[] { textBoxAttack1, textBoxAttack2, textBoxAttack3,
+                                               textBoxAttack4, textBoxAttack5, textBoxLootKey })
             {
                 tb.BackColor   = C_INPUT;
                 tb.ForeColor   = C_TEXT;
                 tb.BorderStyle = BorderStyle.FixedSingle;
             }
 
-            foreach (var nu in new NumericUpDown[] { numericKillTime, numericLootTime, numericTargetX, numericTargetY })
+            foreach (var nu in new NumericUpDown[] { numericKillTime, numericLootTime, numericTargetX, numericTargetY, numericKeyDelay })
             {
                 nu.BackColor = C_INPUT;
                 nu.ForeColor = C_TEXT;
@@ -122,12 +123,14 @@ namespace Auto_Loot_RF_by_Yasir_Haq
 
             _bot.StartKillLoot(
                 hwnd,
-                textBoxAttackKey.Text,
+                new[] { textBoxAttack1.Text, textBoxAttack2.Text, textBoxAttack3.Text,
+                         textBoxAttack4.Text, textBoxAttack5.Text },
                 textBoxLootKey.Text,
                 (int)numericKillTime.Value,
                 (int)numericLootTime.Value,
                 (int)numericTargetX.Value,
-                (int)numericTargetY.Value);
+                (int)numericTargetY.Value,
+                (int)numericKeyDelay.Value);
             UpdateUI();
         }
 

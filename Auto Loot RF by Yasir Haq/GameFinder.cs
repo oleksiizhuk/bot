@@ -14,7 +14,8 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             Win32.EnumWindows((hWnd, lp) =>
             {
                 if (!Win32.IsWindowVisible(hWnd)) return true;
-                Win32.GetWindowThreadProcessId(hWnd, out uint pid);
+                uint pid;
+                Win32.GetWindowThreadProcessId(hWnd, out pid);
                 string name = "";
                 try { name = Process.GetProcessById((int)pid).ProcessName.ToLower(); }
                 catch { return true; }
