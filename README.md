@@ -1,89 +1,81 @@
 # RF Auto Loot
 
 Automated looting and mob killing for RF Online.  
-Keystrokes are sent **directly to the game window** — browser and other apps are not affected.
-
----
-
-## Quick Start
-
-1. Open RF Online
-2. Run `build.bat` — the project will build and launch automatically
-3. Click **Refresh**, select the game window from the list
-4. Configure your keys and click **START LOOT** or **KILL + LOOT**
-
-> If RF Online runs as Administrator — run `build.bat` as Administrator too.
-
----
-
-## Files
-
-| File | Description |
-|------|-------------|
-| `build.bat` | Builds the project and launches the app |
-| `Auto Loot RF by Yasir Haq.sln` | Visual Studio solution (for editing source code) |
-| `Auto Loot RF by Yasir Haq\bin\Release\` | Output folder with the compiled `.exe` |
+Keystrokes and mouse clicks are sent **directly to the game window** — other apps are not affected.
 
 ---
 
 ## Requirements
 
-- Windows 7 / 10 / 11
-- Visual Studio 2017 / 2019 / 2022 (any edition, including Community)  
+- Windows 10 / 11
+- **Visual Studio 2017–2022** (any edition, including Community)  
   or [Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022)
+
+NuGet packages are already included in the `packages/` folder — no internet needed.
+
+---
+
+## Build & Run
+
+1. Open RF Online
+2. Double-click **`build.bat`**  
+   → builds the project and launches the app automatically
+
+> If RF Online runs as Administrator — right-click `build.bat` → **Run as administrator**
+
+> Press **ESC** at any time to close the bot
+
+---
+
+## First Run — DLL Fix (if app crashes immediately)
+
+If the app crashes on startup with a native library error, copy these two files manually:
+
+**From:**
+```
+packages\OpenCvSharp4.runtime.win.4.13.0.20260302\runtimes\win-x64\native\
+```
+**To:**
+```
+Auto Loot RF by Yasir Haq\bin\Release\
+```
+
+Files to copy:
+- `OpenCvSharpExtern.dll`
+- `opencv_videoio_ffmpeg4130_64.dll`
+
+Then launch the `.exe` directly from `bin\Release\`.
 
 ---
 
 ## Interface
 
-```
-+---------------------------------------------+
-| RF AUTO LOOT                                |
-| RF Online Automation Tool                   |
-+---------------------------------------------+
-| GAME WINDOW                                 |
-| [rfonline]  RF Online Client    [Refresh]   |
-+---------------------------------------------+
-| KEY BINDINGS                                |
-| Target Key      Attack Key      Loot Key    |
-|   [TAB]           [F1]            [X]       |
-+---------------------------------------------+
-| TIMING                                      |
-| Kill Time  [5] sec      Loot Time  [3] sec  |
-+---------------------------------------------+
-|  [> START LOOT]       [x KILL + LOOT]      |
-+---------------------------------------------+
-| * Ready -> [rfonline]                       |
-+---------------------------------------------+
-```
+### KEY BINDINGS
 
----
+| Control | Description |
+|---------|-------------|
+| **Click Coords X / Y** | Screen coordinates where the bot clicks to target a mob |
+| **Pick** button | Click Pick → move your cursor to the mob target area → left-click to lock coordinates |
+| **Attack Sequence** | Up to 5 keys pressed in order each attack cycle (`LMB`, `RMB`, `F1`–`F12`, `TAB`, letters) |
+| **Delay (ms)** | Pause between each attack key (default 1500 ms) |
+| **Loot Key** | Key pressed to pick up loot (default `X`) |
 
-## Configuration
+### TIMING
 
-### Game Window
+| Control | Description |
+|---------|-------------|
+| **Kill Time (sec)** | How long the bot attacks before switching to loot phase |
+| **Loot Time (sec)** | How long the bot presses the loot key |
 
-- Click **Refresh** — the list will populate with all open windows
-- Select the game window (usually `[rfonline]  RF Online`)
+### MOB DETECTION
 
-> If you opened the game after launching the bot — click **Refresh** again.
-
-### Key Bindings
-
-| Field | Purpose | Examples |
-|-------|---------|---------|
-| **Target Key** | Select nearest mob | `TAB`, `Q` |
-| **Attack Key** | Attack / use skill | `F1`, `F2`, `1`, `2` |
-| **Loot Key** | Pick up items | `X`, `Z` |
-
-Supported formats: single characters (`X`, `Q`, `1`), function keys (`F1`–`F12`), special keys (`TAB`, `ENTER`, `SPACE`).
-
-### Timing (Kill + Loot mode only)
-
-- **Kill Time** — how many seconds the bot attacks before switching to loot
-- **Loot Time** — how many seconds the bot presses the loot key
-
-Adjust based on how fast your character kills mobs.
+| Control | Description |
+|---------|-------------|
+| **Snip Template** | Select a screen region containing the mob — saved as a detection template |
+| **Remove** | Delete the selected template |
+| **Auto-target** | When enabled, bot uses template matching to click on the detected mob instead of fixed coords |
+| **Threshold** | Match confidence (0.50–1.00). Lower = more lenient, higher = stricter |
+| **Templates list** | Click a template to preview it. Double-click to open full 800×600 view |
 
 ---
 
@@ -91,49 +83,49 @@ Adjust based on how fast your character kills mobs.
 
 ### START LOOT
 
-Presses the loot key every 150 ms. Use this when you attack manually and only need auto-looting.
+Presses the loot key every 150 ms.  
+Use when you attack manually and only need auto-looting.
 
-**Start:** click `> START LOOT`  
-**Stop:** click the same button again
+**Start:** click `START LOOT`  
+**Stop:** click the button again
 
 ### KILL + LOOT
 
 Runs a full automatic cycle:
 
 ```
-[1] Target -> press Target Key once
-[2] Attack -> press Attack Key for Kill Time seconds
-[3] Loot   -> press Loot Key for Loot Time seconds
--> repeat
+Phase 0 — Click target coords (or detected mob if Auto-target is on)
+Phase 1 — Press Attack Sequence keys for Kill Time seconds
+Phase 2 — Press Loot Key for Loot Time seconds
+→ repeat
 ```
 
-**Start:** click `x KILL + LOOT`  
-**Stop:** click the same button again
+**Start:** click `KILL + LOOT`  
+**Stop:** click the button again
 
 ---
 
-## Status Bar
+## Key Format
 
-| Message | Meaning |
-|---------|---------|
-| `* Ready -> [rfonline]` | Window selected, bot is ready |
-| `* Looting -> [rfonline]` | Start Loot mode is running |
-| `* Kill + Loot -> [rfonline]` | Kill + Loot mode is running |
-| `* No game window selected` | No window selected, buttons are disabled |
+| Input | Meaning |
+|-------|---------|
+| `LMB` | Left mouse button |
+| `RMB` | Right mouse button |
+| `F1` – `F12` | Function keys |
+| `TAB`, `ENTER`, `SPACE` | Special keys |
+| `X`, `Q`, `1` | Single character keys |
+
+Leave attack slots empty to skip them.
 
 ---
 
 ## Troubleshooting
 
-**Keys are not reaching the game**  
-Make sure the correct window is selected and click Refresh. If RF Online runs as Administrator, launch `build.bat` as Administrator too.
+**Clicks not registering in game**  
+RF Online requires the game window to be active for mouse input. The bot automatically brings the game to the foreground before each click and leaves it focused — make sure nothing else is stealing focus.
 
-**Game window not in the list**  
-Open the game first, then click Refresh.
+**App crashes on startup**  
+See [First Run — DLL Fix](#first-run--dll-fix-if-app-crashes-immediately) above.
 
-**Build error in build.bat**  
-Make sure Visual Studio or Build Tools is installed. The error details will be shown in the console window.
-
----
-
-*Original project: [github.com/yasirrhaq](https://github.com/yasirrhaq)*
+**Build fails**  
+Ensure Visual Studio or Build Tools for VS 2017–2022 is installed. The error details appear in the console window.
