@@ -44,9 +44,10 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             public INPUT_UNION u;
         }
 
-        [DllImport("user32.dll")] public static extern bool ScreenToClient(IntPtr hWnd, ref POINT lpPoint);
-        [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
-        [DllImport("user32.dll")] public static extern bool BringWindowToTop(IntPtr hWnd);
+        [DllImport("user32.dll")] public static extern bool   ScreenToClient(IntPtr hWnd, ref POINT lpPoint);
+        [DllImport("user32.dll")] public static extern bool   SetForegroundWindow(IntPtr hWnd);
+        [DllImport("user32.dll")] public static extern bool   BringWindowToTop(IntPtr hWnd);
+        [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
 
         // ── Constants ────────────────────────────────────────────────────
         public const uint INPUT_MOUSE = 0;
@@ -57,6 +58,9 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         public const uint WM_LBUTTONUP   = 0x0202;
         public const uint WM_RBUTTONDOWN = 0x0204;
         public const uint WM_RBUTTONUP   = 0x0205;
+
+        public const uint MK_LBUTTON = 0x0001;
+        public const uint MK_RBUTTON = 0x0002;
 
         public const uint MOUSEEVENTF_LEFTDOWN  = 0x0002;
         public const uint MOUSEEVENTF_LEFTUP    = 0x0004;

@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 
 namespace Auto_Loot_RF_by_Yasir_Haq
 {
@@ -28,59 +27,40 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             Win32.PostMessage(hWnd, Win32.WM_KEYUP,   (IntPtr)vk, lpUp);
         }
 
-        // ── Mouse — initial targeting click (physical, cursor moves) ─────
-        public static void Click(int x, int y)
+        // ── Mouse — physical click with cursor + focus save/restore ─────
+        // DirectInput games (RF Online) ignore PostMessage/SendMessage for mouse.
+        // We save the current foreground window and cursor pos, switch to the game
+        // just long enough to click, then restore both immediately after.
+        public static void Click(IntPtr hwnd, int screenX, int screenY, bool rightButton = false)
         {
-            Win32.SetCursorPos(x, y);
-            Win32.mouse_event(Win32.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-            Win32.mouse_event(Win32.MOUSEEVENTF_LEFTUP,   0, 0, 0, 0);
+            IntPtr prevFocus = Win32.GetForegroundWindow();
+            Win32.POINT saved;
+            Win32.GetCursorPos(out saved);
+
+            Win32.SetForegroundWindow(hwnd);
+            System.Threading.Thread.Sleep(20);
+            Win32.SetCursorPos(screenX, screenY);
+
+            uint dn = rightButton ? Win32.MOUSEEVENTF_RIGHTDOWN : Win32.MOUSEEVENTF_LEFTDOWN;
+            uint up = rightButton ? Win32.MOUSEEVENTF_RIGHTUP   : Win32.MOUSEEVENTF_LEFTUP;
+            Win32.mouse_event(dn, 0, 0, 0, 0);
+            System.Threading.Thread.Sleep(30);
+            Win32.mouse_event(up, 0, 0, 0, 0);
+
+            Win32.SetCursorPos(saved.X, saved.Y);
+            if (prevFocus != IntPtr.Zero && prevFocus != hwnd)
+                Win32.SetForegroundWindow(prevFocus);
         }
 
-        // ── Mouse — attack sequence (SendInput, cursor save/restore) ─────
-        // SendInput is the only API that reaches DirectInput / Raw Input games.
-        // Cursor is moved to target for the click, then instantly restored —
-        // the flash is < 1 ms so the user won't notice it.
         public static void SendAttackAction(IntPtr hwnd, string key, int screenX, int screenY)
         {
             if (string.IsNullOrWhiteSpace(key)) return;
             key = key.Trim().ToUpper();
 
-            if (key == "RMB") { PhysicalClick(hwnd, screenX, screenY, rightButton: true);  return; }
-            if (key == "LMB") { PhysicalClick(hwnd, screenX, screenY, rightButton: false); return; }
+            if (key == "RMB") { Click(hwnd, screenX, screenY, rightButton: true);  return; }
+            if (key == "LMB") { Click(hwnd, screenX, screenY, rightButton: false); return; }
 
             SendKey(hwnd, key);
-        }
-
-        private static void PhysicalClick(IntPtr hwnd, int screenX, int screenY, bool rightButton)
-        {
-            string btn = rightButton ? "RMB" : "LMB";
-
-            Win32.SetCursorPos(screenX, screenY);
-
-            uint downFlag = rightButton ? Win32.MOUSEEVENTF_RIGHTDOWN : Win32.MOUSEEVENTF_LEFTDOWN;
-            uint upFlag   = rightButton ? Win32.MOUSEEVENTF_RIGHTUP   : Win32.MOUSEEVENTF_LEFTUP;
-
-            var inputs = new Win32.INPUT[]
-            {
-                MakeMouseInput(downFlag),
-                MakeMouseInput(upFlag),
-            };
-            uint sent = Win32.SendInput(2, inputs, Marshal.SizeOf(typeof(Win32.INPUT)));
-
-            Log(string.Format("{0} -> screen=({1},{2}) SendInput={3}/2 {4}",
-                btn, screenX, screenY, sent, sent < 2 ? "*** BLOCKED ***" : "OK"));
-        }
-
-        private static Win32.INPUT MakeMouseInput(uint flags)
-        {
-            return new Win32.INPUT
-            {
-                type = Win32.INPUT_MOUSE,
-                u    = new Win32.INPUT_UNION
-                {
-                    mi = new Win32.MOUSEINPUT { dwFlags = flags }
-                }
-            };
         }
 
         private static byte ParseVK(string s)

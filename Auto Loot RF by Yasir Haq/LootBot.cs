@@ -72,7 +72,8 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             switch (_phase)
             {
                 case 0:
-                    InputSender.Click(_clickX, _clickY);
+                    var h0 = _hwnd; var x0 = _clickX; var y0 = _clickY;
+                    Task.Run(() => InputSender.Click(h0, x0, y0));
                     _phaseTicks = 0;
                     _phase      = 1;
                     break;
