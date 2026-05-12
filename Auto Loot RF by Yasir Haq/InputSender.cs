@@ -45,25 +45,17 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             if (string.IsNullOrWhiteSpace(key)) return;
             key = key.Trim().ToUpper();
 
-            if (key == "RMB") { PhysicalClick(screenX, screenY, rightButton: true);  return; }
-            if (key == "LMB") { PhysicalClick(screenX, screenY, rightButton: false); return; }
+            if (key == "RMB") { PhysicalClick(hwnd, screenX, screenY, rightButton: true);  return; }
+            if (key == "LMB") { PhysicalClick(hwnd, screenX, screenY, rightButton: false); return; }
 
             SendKey(hwnd, key);
         }
 
-        private static void PhysicalClick(int screenX, int screenY, bool rightButton)
+        private static void PhysicalClick(IntPtr hwnd, int screenX, int screenY, bool rightButton)
         {
             string btn = rightButton ? "RMB" : "LMB";
-            Log(string.Format("{0} -> target=({1},{2})", btn, screenX, screenY));
 
-            // Save cursor position
-            Win32.POINT old;
-            Win32.GetCursorPos(out old);
-            Log(string.Format("{0}    cursor saved=({1},{2})", btn, old.X, old.Y));
-
-            // Move to target
-            bool moved = Win32.SetCursorPos(screenX, screenY);
-            Log(string.Format("{0}    SetCursorPos={1}", btn, moved));
+            Win32.SetCursorPos(screenX, screenY);
 
             uint downFlag = rightButton ? Win32.MOUSEEVENTF_RIGHTDOWN : Win32.MOUSEEVENTF_LEFTDOWN;
             uint upFlag   = rightButton ? Win32.MOUSEEVENTF_RIGHTUP   : Win32.MOUSEEVENTF_LEFTUP;
@@ -74,12 +66,9 @@ namespace Auto_Loot_RF_by_Yasir_Haq
                 MakeMouseInput(upFlag),
             };
             uint sent = Win32.SendInput(2, inputs, Marshal.SizeOf(typeof(Win32.INPUT)));
-            Log(string.Format("{0}    SendInput sent={1}/2{2}", btn, sent,
-                sent < 2 ? "  *** BLOCKED ***" : "  OK"));
 
-            // Restore cursor
-            Win32.SetCursorPos(old.X, old.Y);
-            Log(string.Format("{0}    cursor restored=({1},{2})", btn, old.X, old.Y));
+            Log(string.Format("{0} -> screen=({1},{2}) SendInput={3}/2 {4}",
+                btn, screenX, screenY, sent, sent < 2 ? "*** BLOCKED ***" : "OK"));
         }
 
         private static Win32.INPUT MakeMouseInput(uint flags)

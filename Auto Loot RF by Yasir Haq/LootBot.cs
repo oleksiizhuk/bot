@@ -17,6 +17,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         private string   _lootKey;
         private int    _clickX, _clickY, _keyDelay;
         private int    _phase, _phaseTicks, _attackTicks, _lootTicks;
+        private volatile bool _attackRunning;
 
         public LootBot()
         {
@@ -57,6 +58,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             _timerKillLoot.Stop();
             IsLootActive     = false;
             IsKillLootActive = false;
+            _attackRunning   = false;
             _hwnd = IntPtr.Zero;
         }
 
@@ -75,20 +77,28 @@ namespace Auto_Loot_RF_by_Yasir_Haq
                     _phase      = 1;
                     break;
                 case 1:
-                    var hwnd   = _hwnd;
-                    var keys   = _attackKeys;
-                    var delay  = _keyDelay;
-                    var cx     = _clickX;
-                    var cy     = _clickY;
-                    Task.Run(async () =>
+                    if (!_attackRunning)
                     {
-                        foreach (var key in keys)
+                        var hwnd   = _hwnd;
+                        var keys   = _attackKeys;
+                        var delay  = _keyDelay;
+                        var cx     = _clickX;
+                        var cy     = _clickY;
+                        _attackRunning = true;
+                        Task.Run(async () =>
                         {
-                            if (string.IsNullOrWhiteSpace(key)) continue;
-                            InputSender.SendAttackAction(hwnd, key, cx, cy);
-                            if (delay > 0) await Task.Delay(delay);
-                        }
-                    });
+                            try
+                            {
+                                foreach (var key in keys)
+                                {
+                                    if (string.IsNullOrWhiteSpace(key)) continue;
+                                    InputSender.SendAttackAction(hwnd, key, cx, cy);
+                                    if (delay > 0) await Task.Delay(delay);
+                                }
+                            }
+                            finally { _attackRunning = false; }
+                        });
+                    }
                     if (++_phaseTicks >= _attackTicks) { _phaseTicks = 0; _phase = 2; }
                     break;
                 case 2:

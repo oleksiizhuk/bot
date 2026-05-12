@@ -157,7 +157,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             // 5 attack boxes: 50px wide, 6px gap → x=12,68,124,180,236
             this.textBoxAttack1.Location  = new System.Drawing.Point(12,  184);
             this.textBoxAttack1.Size      = new System.Drawing.Size(50, 24);
-            this.textBoxAttack1.Text      = "RMB";
+            this.textBoxAttack1.Text      = "LMB";
             this.textBoxAttack1.Font      = new System.Drawing.Font("Segoe UI", 8.5F);
             this.textBoxAttack1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 
@@ -291,10 +291,13 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.AutoScaleMode       = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize          = new System.Drawing.Size(500, 492);
             this.FormBorderStyle     = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.KeyPreview          = true;
             this.MaximizeBox         = false;
             this.Name                = "Form1";
             this.Text                = "RF Auto Loot";
             this.StartPosition       = System.Windows.Forms.FormStartPosition.CenterScreen;
+
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
 
             this.Controls.Add(this.panelHeader);
             this.Controls.Add(this.panelKeys);

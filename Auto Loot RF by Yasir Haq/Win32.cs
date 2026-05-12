@@ -44,15 +44,28 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             public INPUT_UNION u;
         }
 
+        [DllImport("user32.dll")] public static extern bool ScreenToClient(IntPtr hWnd, ref POINT lpPoint);
+        [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+        [DllImport("user32.dll")] public static extern bool BringWindowToTop(IntPtr hWnd);
+
         // ── Constants ────────────────────────────────────────────────────
         public const uint INPUT_MOUSE = 0;
 
-        public const uint WM_KEYDOWN  = 0x0100;
-        public const uint WM_KEYUP    = 0x0101;
+        public const uint WM_KEYDOWN     = 0x0100;
+        public const uint WM_KEYUP       = 0x0101;
+        public const uint WM_LBUTTONDOWN = 0x0201;
+        public const uint WM_LBUTTONUP   = 0x0202;
+        public const uint WM_RBUTTONDOWN = 0x0204;
+        public const uint WM_RBUTTONUP   = 0x0205;
 
         public const uint MOUSEEVENTF_LEFTDOWN  = 0x0002;
         public const uint MOUSEEVENTF_LEFTUP    = 0x0004;
         public const uint MOUSEEVENTF_RIGHTDOWN = 0x0008;
         public const uint MOUSEEVENTF_RIGHTUP   = 0x0010;
+
+        public static IntPtr MakeLParam(int x, int y)
+        {
+            return (IntPtr)(((ushort)y << 16) | (ushort)x);
+        }
     }
 }

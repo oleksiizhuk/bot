@@ -134,6 +134,11 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             UpdateUI();
         }
 
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape) Application.Exit();
+        }
+
         private void buttonPickCoords_Click(object sender, EventArgs e)
         {
             numericTargetX.Value = Cursor.Position.X;
