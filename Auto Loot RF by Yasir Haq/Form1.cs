@@ -19,10 +19,14 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         static readonly Color C_RED    = Color.FromArgb(185, 42,  42);
 
         private readonly LootBot _bot = new LootBot();
+        private readonly System.Windows.Forms.Timer _pickTimer = new System.Windows.Forms.Timer { Interval = 50 };
+        private bool _picking;
+        private bool _pickReady;  // ignore the LMB that clicked the Pick button itself
 
         public Form1()
         {
             InitializeComponent();
+            _pickTimer.Tick += OnPickTick;
             try { ApplyTheme(); UpdateStatus(); }
             catch (Exception ex)
             {
@@ -141,8 +145,37 @@ namespace Auto_Loot_RF_by_Yasir_Haq
 
         private void buttonPickCoords_Click(object sender, EventArgs e)
         {
-            numericTargetX.Value = Cursor.Position.X;
-            numericTargetY.Value = Cursor.Position.Y;
+            if (_picking) { StopPicking(); return; }
+
+            _picking   = true;
+            _pickReady = false;
+            buttonPickCoords.Text      = "Cancel";
+            buttonPickCoords.BackColor = C_RED;
+            buttonPickCoords.FlatAppearance.BorderColor = C_RED;
+            _pickTimer.Start();
+        }
+
+        private void OnPickTick(object sender, EventArgs e)
+        {
+            var pos = Cursor.Position;
+            numericTargetX.Value = Math.Max(numericTargetX.Minimum, Math.Min(numericTargetX.Maximum, pos.X));
+            numericTargetY.Value = Math.Max(numericTargetY.Minimum, Math.Min(numericTargetY.Maximum, pos.Y));
+
+            // skip first few ticks so we don't capture the Pick button click itself
+            if (!_pickReady) { _pickReady = (Win32.GetAsyncKeyState(Win32.VK_LBUTTON) & 0x8000) == 0; return; }
+
+            if ((Win32.GetAsyncKeyState(Win32.VK_LBUTTON) & 0x8000) != 0)
+                StopPicking();
+        }
+
+        private void StopPicking()
+        {
+            _pickTimer.Stop();
+            _picking   = false;
+            _pickReady = false;
+            buttonPickCoords.Text      = "Pick";
+            buttonPickCoords.BackColor = C_PANEL;
+            buttonPickCoords.FlatAppearance.BorderColor = C_DIM;
         }
 
         // ── UI state ──────────────────────────────────────────────────────

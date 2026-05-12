@@ -48,6 +48,9 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         [DllImport("user32.dll")] public static extern bool   SetForegroundWindow(IntPtr hWnd);
         [DllImport("user32.dll")] public static extern bool   BringWindowToTop(IntPtr hWnd);
         [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll")] public static extern short  GetAsyncKeyState(int vKey);
+
+        public const int VK_LBUTTON = 0x01;
 
         // ── Constants ────────────────────────────────────────────────────
         public const uint INPUT_MOUSE = 0;

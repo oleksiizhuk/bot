@@ -193,7 +193,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.numericKeyDelay.Size     = new System.Drawing.Size(64, 24);
             this.numericKeyDelay.Minimum  = 0;
             this.numericKeyDelay.Maximum  = 2000;
-            this.numericKeyDelay.Value    = 0;
+            this.numericKeyDelay.Value    = 1500;
             this.numericKeyDelay.Increment = 50;
             this.numericKeyDelay.Font     = new System.Drawing.Font("Segoe UI", 9F);
 
