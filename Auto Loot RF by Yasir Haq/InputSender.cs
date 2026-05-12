@@ -33,7 +33,6 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         // just long enough to click, then restore both immediately after.
         public static void Click(IntPtr hwnd, int screenX, int screenY, bool rightButton = false)
         {
-            IntPtr prevFocus = Win32.GetForegroundWindow();
             Win32.POINT saved;
             Win32.GetCursorPos(out saved);
 
@@ -48,8 +47,6 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             Win32.mouse_event(up, 0, 0, 0, 0);
 
             Win32.SetCursorPos(saved.X, saved.Y);
-            if (prevFocus != IntPtr.Zero && prevFocus != hwnd)
-                Win32.SetForegroundWindow(prevFocus);
         }
 
         public static void SendAttackAction(IntPtr hwnd, string key, int screenX, int screenY)

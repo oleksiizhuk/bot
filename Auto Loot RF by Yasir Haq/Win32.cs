@@ -22,6 +22,9 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         public struct POINT { public int X; public int Y; }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct RECT  { public int Left, Top, Right, Bottom; }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct MOUSEINPUT
         {
             public int    dx, dy;
@@ -45,6 +48,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         }
 
         [DllImport("user32.dll")] public static extern bool   ScreenToClient(IntPtr hWnd, ref POINT lpPoint);
+        [DllImport("user32.dll")] public static extern bool   GetWindowRect(IntPtr hWnd, out RECT lpRect);
         [DllImport("user32.dll")] public static extern bool   SetForegroundWindow(IntPtr hWnd);
         [DllImport("user32.dll")] public static extern bool   BringWindowToTop(IntPtr hWnd);
         [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();

@@ -54,11 +54,24 @@ namespace Auto_Loot_RF_by_Yasir_Haq
 
             this.labelStatus = new System.Windows.Forms.Label();
 
+            this.panelDetect          = new System.Windows.Forms.Panel();
+            this.labelDetectSec       = new System.Windows.Forms.Label();
+            this.labelThreshold       = new System.Windows.Forms.Label();
+            this.numericThreshold     = new System.Windows.Forms.NumericUpDown();
+            this.buttonSnipTemplate   = new System.Windows.Forms.Button();
+            this.buttonRemoveTemplate = new System.Windows.Forms.Button();
+            this.checkBoxAutoTarget   = new System.Windows.Forms.CheckBox();
+            this.listBoxTemplates     = new System.Windows.Forms.ListBox();
+            this.pictureBoxTemplate   = new System.Windows.Forms.PictureBox();
+
             ((System.ComponentModel.ISupportInitialize)(this.numericKillTime)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericLootTime)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericTargetX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericTargetY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericKeyDelay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericThreshold)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTemplate)).BeginInit();
+            this.panelDetect.SuspendLayout();
             this.panelHeader.SuspendLayout();
             this.panelKeys.SuspendLayout();
             this.panelTiming.SuspendLayout();
@@ -289,13 +302,79 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             // ── Form ─────────────────────────────────────────────────────
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode       = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize          = new System.Drawing.Size(500, 492);
+            this.ClientSize          = new System.Drawing.Size(500, 622);
             this.FormBorderStyle     = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.KeyPreview          = true;
             this.MaximizeBox         = false;
             this.Name                = "Form1";
             this.Text                = "RF Auto Loot";
             this.StartPosition       = System.Windows.Forms.FormStartPosition.CenterScreen;
+
+            // ── panelDetect (y=495, h=122) ───────────────────────────────
+            this.panelDetect.Location = new System.Drawing.Point(10, 495);
+            this.panelDetect.Size     = new System.Drawing.Size(480, 122);
+            this.panelDetect.Controls.Add(this.labelDetectSec);
+            this.panelDetect.Controls.Add(this.labelThreshold);
+            this.panelDetect.Controls.Add(this.numericThreshold);
+            this.panelDetect.Controls.Add(this.buttonSnipTemplate);
+            this.panelDetect.Controls.Add(this.buttonRemoveTemplate);
+            this.panelDetect.Controls.Add(this.checkBoxAutoTarget);
+            this.panelDetect.Controls.Add(this.listBoxTemplates);
+            this.panelDetect.Controls.Add(this.pictureBoxTemplate);
+
+            this.labelDetectSec.AutoSize = true;
+            this.labelDetectSec.Location = new System.Drawing.Point(12, 7);
+            this.labelDetectSec.Text     = "MOB DETECTION";
+            this.labelDetectSec.Font     = new System.Drawing.Font("Segoe UI", 7.5F, System.Drawing.FontStyle.Bold);
+
+            this.labelThreshold.AutoSize = true;
+            this.labelThreshold.Location = new System.Drawing.Point(330, 9);
+            this.labelThreshold.Text     = "Threshold";
+            this.labelThreshold.Font     = new System.Drawing.Font("Segoe UI", 8F);
+
+            this.numericThreshold.Location      = new System.Drawing.Point(393, 5);
+            this.numericThreshold.Size          = new System.Drawing.Size(72, 24);
+            this.numericThreshold.DecimalPlaces = 2;
+            this.numericThreshold.Increment     = 0.05M;
+            this.numericThreshold.Minimum       = 0.50M;
+            this.numericThreshold.Maximum       = 1.00M;
+            this.numericThreshold.Value         = 0.80M;
+            this.numericThreshold.Font          = new System.Drawing.Font("Segoe UI", 9F);
+            this.numericThreshold.ValueChanged += new System.EventHandler(this.numericThreshold_ValueChanged);
+
+            this.buttonSnipTemplate.Location  = new System.Drawing.Point(12, 26);
+            this.buttonSnipTemplate.Size      = new System.Drawing.Size(138, 26);
+            this.buttonSnipTemplate.Text      = "Snip Template";
+            this.buttonSnipTemplate.Font      = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.buttonSnipTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonSnipTemplate.Cursor    = System.Windows.Forms.Cursors.Hand;
+            this.buttonSnipTemplate.Click    += new System.EventHandler(this.buttonSnipTemplate_Click);
+
+            this.buttonRemoveTemplate.Location  = new System.Drawing.Point(156, 26);
+            this.buttonRemoveTemplate.Size      = new System.Drawing.Size(80, 26);
+            this.buttonRemoveTemplate.Text      = "Remove";
+            this.buttonRemoveTemplate.Font      = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.buttonRemoveTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonRemoveTemplate.Cursor    = System.Windows.Forms.Cursors.Hand;
+            this.buttonRemoveTemplate.Click    += new System.EventHandler(this.buttonRemoveTemplate_Click);
+
+            this.checkBoxAutoTarget.AutoSize = true;
+            this.checkBoxAutoTarget.Location = new System.Drawing.Point(248, 30);
+            this.checkBoxAutoTarget.Text     = "Auto-target";
+            this.checkBoxAutoTarget.Font     = new System.Drawing.Font("Segoe UI", 8.5F);
+
+            this.listBoxTemplates.Location              = new System.Drawing.Point(12, 58);
+            this.listBoxTemplates.Size                  = new System.Drawing.Size(216, 58);
+            this.listBoxTemplates.Font                  = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.listBoxTemplates.BorderStyle           = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.listBoxTemplates.SelectionMode         = System.Windows.Forms.SelectionMode.One;
+            this.listBoxTemplates.SelectedIndexChanged += new System.EventHandler(this.listBoxTemplates_SelectedIndexChanged);
+            this.listBoxTemplates.DoubleClick          += new System.EventHandler(this.listBoxTemplates_DoubleClick);
+
+            this.pictureBoxTemplate.Location  = new System.Drawing.Point(234, 58);
+            this.pictureBoxTemplate.Size      = new System.Drawing.Size(234, 58);
+            this.pictureBoxTemplate.SizeMode  = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxTemplate.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
 
@@ -304,6 +383,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.Controls.Add(this.panelTiming);
             this.Controls.Add(this.panelButtons);
             this.Controls.Add(this.panelStatus);
+            this.Controls.Add(this.panelDetect);
 
             this.panelHeader.ResumeLayout(false);
             this.panelHeader.PerformLayout();
@@ -314,11 +394,15 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.panelButtons.ResumeLayout(false);
             this.panelStatus.ResumeLayout(false);
             this.panelStatus.PerformLayout();
+            this.panelDetect.ResumeLayout(false);
+            this.panelDetect.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericKillTime)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericLootTime)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericTargetX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericTargetY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericKeyDelay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericThreshold)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTemplate)).EndInit();
             this.ResumeLayout(false);
         }
 
@@ -356,5 +440,14 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         private System.Windows.Forms.Button         buttonLoot;
         private System.Windows.Forms.Button         buttonKillLoot;
         private System.Windows.Forms.Label          labelStatus;
+        private System.Windows.Forms.Panel          panelDetect;
+        private System.Windows.Forms.Label          labelDetectSec;
+        private System.Windows.Forms.Label          labelThreshold;
+        private System.Windows.Forms.NumericUpDown  numericThreshold;
+        private System.Windows.Forms.Button         buttonSnipTemplate;
+        private System.Windows.Forms.Button         buttonRemoveTemplate;
+        private System.Windows.Forms.CheckBox       checkBoxAutoTarget;
+        private System.Windows.Forms.ListBox        listBoxTemplates;
+        private System.Windows.Forms.PictureBox     pictureBoxTemplate;
     }
 }

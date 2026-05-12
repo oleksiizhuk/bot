@@ -6,8 +6,9 @@ namespace Auto_Loot_RF_by_Yasir_Haq
 {
     internal sealed class LootBot
     {
-        public bool IsLootActive     { get; private set; }
-        public bool IsKillLootActive { get; private set; }
+        public bool        IsLootActive     { get; private set; }
+        public bool        IsKillLootActive { get; private set; }
+        public MobDetector Detector         { get; set; }
 
         private readonly Timer _timerLoot     = new Timer { Interval = 150 };
         private readonly Timer _timerKillLoot = new Timer { Interval = 150 };
@@ -72,8 +73,19 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             switch (_phase)
             {
                 case 0:
-                    var h0 = _hwnd; var x0 = _clickX; var y0 = _clickY;
-                    Task.Run(() => InputSender.Click(h0, x0, y0));
+                    var h0  = _hwnd;
+                    var x0  = _clickX;
+                    var y0  = _clickY;
+                    var det = Detector;
+                    Task.Run(() =>
+                    {
+                        if (det != null && det.Count > 0)
+                        {
+                            var found = det.FindBestScreenPoint(h0);
+                            if (found.HasValue) { InputSender.Click(h0, found.Value.X, found.Value.Y); return; }
+                        }
+                        InputSender.Click(h0, x0, y0);
+                    });
                     _phaseTicks = 0;
                     _phase      = 1;
                     break;
