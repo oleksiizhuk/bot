@@ -14,23 +14,39 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             catch { }
         }
 
-        // ── Keyboard (PostMessage — works for RF Online) ──────────────────
+        // ── Keyboard — AttachThreadInput + SetFocus (background-safe) ────
+        // Redirects keyboard focus to the target window at the OS input level
+        // without changing the visible foreground window. Works even when the
+        // user is actively using a different window.
         public static void SendKey(IntPtr hWnd, string keyStr)
         {
             if (hWnd == IntPtr.Zero) return;
             byte vk = ParseVK(keyStr);
             if (vk == 0) return;
-            uint   scan = Win32.MapVirtualKey(vk, 0);
+
+            uint scan = Win32.MapVirtualKey(vk, 0);
             IntPtr lpDn = (IntPtr)((scan << 16) | 1u);
             IntPtr lpUp = new IntPtr(unchecked((int)(0xC0000000u | (scan << 16) | 1u)));
+
+            uint _pid;
+            uint targetThread  = Win32.GetWindowThreadProcessId(hWnd, out _pid);
+            uint currentThread = Win32.GetCurrentThreadId();
+
+            bool attached   = targetThread != currentThread &&
+                              Win32.AttachThreadInput(currentThread, targetThread, true);
+            IntPtr prevFocus = attached ? Win32.SetFocus(hWnd) : IntPtr.Zero;
+
             Win32.PostMessage(hWnd, Win32.WM_KEYDOWN, (IntPtr)vk, lpDn);
             Win32.PostMessage(hWnd, Win32.WM_KEYUP,   (IntPtr)vk, lpUp);
+
+            if (attached)
+            {
+                if (prevFocus != IntPtr.Zero) Win32.SetFocus(prevFocus);
+                Win32.AttachThreadInput(currentThread, targetThread, false);
+            }
         }
 
-        // ── Mouse — physical click with cursor + focus save/restore ─────
-        // DirectInput games (RF Online) ignore PostMessage/SendMessage for mouse.
-        // We save the current foreground window and cursor pos, switch to the game
-        // just long enough to click, then restore both immediately after.
+        // ── Mouse — physical click (required for DirectInput targeting) ──
         public static void Click(IntPtr hwnd, int screenX, int screenY, bool rightButton = false)
         {
             Win32.POINT saved;

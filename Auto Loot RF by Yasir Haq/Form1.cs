@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -20,20 +21,26 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         static readonly Color C_ORANGE = Color.FromArgb(185, 115, 0);
         static readonly Color C_RED    = Color.FromArgb(185, 42,  42);
 
-        private readonly LootBot     _bot      = new LootBot();
-        private readonly MobDetector _detector = new MobDetector();
+        private readonly LootBot        _bot           = new LootBot();
+        private readonly MobDetector    _detector      = new MobDetector();
+        private readonly List<IntPtr>   _windowHandles = new List<IntPtr>();
         private static readonly string TemplatesDir =
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "templates");
 
-        private readonly System.Windows.Forms.Timer _pickTimer = new System.Windows.Forms.Timer { Interval = 50 };
+        private readonly System.Windows.Forms.Timer _pickTimer      = new System.Windows.Forms.Timer { Interval = 50 };
+        private readonly System.Windows.Forms.Timer _pickWndTimer   = new System.Windows.Forms.Timer { Interval = 50 };
         private bool _picking;
         private bool _pickReady;
+        private bool _pickingWindow;
+        private bool _pickWindowReady;
+        private IntPtr _pickedHwnd;
 
         public Form1()
         {
             InitializeComponent();
-            _pickTimer.Tick += OnPickTick;
-            try { ApplyTheme(); UpdateStatus(); LoadTemplates(); }
+            _pickTimer.Tick    += OnPickTick;
+            _pickWndTimer.Tick += OnPickWindowTick;
+            try { ApplyTheme(); RefreshWindowList(); UpdateStatus(); LoadTemplates(); }
             catch (Exception ex)
             {
                 MessageBox.Show("Startup error:\n\n" + ex.Message, "RF Auto Loot",
@@ -48,7 +55,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             panelHeader.BackColor = C_HEADER;
             panelStatus.BackColor = C_STATUS;
 
-            foreach (var p in new Panel[] { panelKeys, panelTiming, panelButtons })
+            foreach (var p in new Panel[] { panelWindow, panelKeys, panelTiming, panelButtons })
             {
                 p.BackColor = C_PANEL;
                 var cap = p;
@@ -68,7 +75,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             labelTitle.ForeColor    = C_TEXT;  labelTitle.BackColor    = Color.Transparent;
             labelSubtitle.ForeColor = C_DIM;   labelSubtitle.BackColor = Color.Transparent;
 
-            foreach (var l in new Label[] { labelKeysSec, labelTimingSec })
+            foreach (var l in new Label[] { labelWindowSec, labelKeysSec, labelTimingSec })
             {
                 l.ForeColor = C_ACCENT;
                 l.BackColor = Color.Transparent;
@@ -95,6 +102,17 @@ namespace Auto_Loot_RF_by_Yasir_Haq
                 nu.BackColor = C_INPUT;
                 nu.ForeColor = C_TEXT;
             }
+
+            comboBoxWindow.BackColor = C_INPUT;
+            comboBoxWindow.ForeColor = C_TEXT;
+
+            buttonPickWindow.BackColor                  = C_PANEL;
+            buttonPickWindow.ForeColor                  = C_TEXT;
+            buttonPickWindow.FlatAppearance.BorderColor = C_DIM;
+
+            buttonRefreshWindows.BackColor                  = C_PANEL;
+            buttonRefreshWindows.ForeColor                  = C_TEXT;
+            buttonRefreshWindows.FlatAppearance.BorderColor = C_DIM;
 
             buttonPickCoords.BackColor                    = C_PANEL;
             buttonPickCoords.ForeColor                    = C_TEXT;
@@ -132,11 +150,84 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         }
 
         // ── Button handlers ───────────────────────────────────────────────
+        private void RefreshWindowList()
+        {
+            _windowHandles.Clear();
+            comboBoxWindow.Items.Clear();
+            foreach (var hwnd in GameFinder.FindAll())
+            {
+                _windowHandles.Add(hwnd);
+                comboBoxWindow.Items.Add(GameFinder.GetWindowTitle(hwnd));
+            }
+            if (comboBoxWindow.Items.Count > 0)
+                comboBoxWindow.SelectedIndex = 0;
+        }
+
+        private IntPtr GetSelectedHwnd()
+        {
+            int idx = comboBoxWindow.SelectedIndex;
+            if (idx < 0 || idx >= _windowHandles.Count) return IntPtr.Zero;
+            return _windowHandles[idx];
+        }
+
+        private void buttonRefreshWindows_Click(object sender, EventArgs e)
+        {
+            RefreshWindowList();
+        }
+
+        private void buttonPickWindow_Click(object sender, EventArgs e)
+        {
+            if (_pickingWindow) { StopPickingWindow(cancel: true); return; }
+            _pickingWindow    = true;
+            _pickWindowReady  = false;
+            _pickedHwnd       = IntPtr.Zero;
+            buttonPickWindow.Text      = "Cancel";
+            buttonPickWindow.BackColor = C_RED;
+            buttonPickWindow.FlatAppearance.BorderColor = C_RED;
+            _pickWndTimer.Start();
+        }
+
+        private void OnPickWindowTick(object sender, EventArgs e)
+        {
+            if (!_pickWindowReady)
+            {
+                _pickWindowReady = (Win32.GetAsyncKeyState(Win32.VK_LBUTTON) & 0x8000) == 0;
+                return;
+            }
+            if ((Win32.GetAsyncKeyState(Win32.VK_LBUTTON) & 0x8000) != 0)
+            {
+                Win32.POINT pt;
+                Win32.GetCursorPos(out pt);
+                _pickedHwnd = Win32.WindowFromPoint(pt);
+                StopPickingWindow(cancel: false);
+            }
+        }
+
+        private void StopPickingWindow(bool cancel)
+        {
+            _pickWndTimer.Stop();
+            _pickingWindow   = false;
+            _pickWindowReady = false;
+            buttonPickWindow.Text      = "Pick";
+            buttonPickWindow.BackColor = C_PANEL;
+            buttonPickWindow.FlatAppearance.BorderColor = C_DIM;
+
+            if (!cancel && _pickedHwnd != IntPtr.Zero)
+            {
+                string title = GameFinder.GetWindowTitle(_pickedHwnd);
+                _windowHandles.Clear();
+                comboBoxWindow.Items.Clear();
+                _windowHandles.Add(_pickedHwnd);
+                comboBoxWindow.Items.Add(title);
+                comboBoxWindow.SelectedIndex = 0;
+            }
+        }
+
         private void buttonLoot_Click(object sender, EventArgs e)
         {
             if (_bot.IsLootActive) { _bot.Stop(); UpdateUI(); return; }
 
-            var hwnd = GameFinder.Find();
+            var hwnd = GetSelectedHwnd();
             if (hwnd == IntPtr.Zero) { ShowNoGameWarning(); return; }
 
             _bot.StartLoot(hwnd, textBoxLootKey.Text);
@@ -147,7 +238,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         {
             if (_bot.IsKillLootActive) { _bot.Stop(); UpdateUI(); return; }
 
-            var hwnd = GameFinder.Find();
+            var hwnd = GetSelectedHwnd();
             if (hwnd == IntPtr.Zero) { ShowNoGameWarning(); return; }
 
             _bot.Detector = checkBoxAutoTarget.Checked ? _detector : null;

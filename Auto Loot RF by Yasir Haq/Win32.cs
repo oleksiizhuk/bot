@@ -8,12 +8,16 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         [DllImport("user32.dll")] public static extern bool   PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
         [DllImport("user32.dll")] public static extern uint   MapVirtualKey(uint uCode, uint uMapType);
         [DllImport("user32.dll")] public static extern bool   EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)] public static extern int GetWindowText(IntPtr hWnd, System.Text.StringBuilder lpString, int nMaxCount);
         [DllImport("user32.dll")] public static extern bool   IsWindowVisible(IntPtr hWnd);
         [DllImport("user32.dll")] public static extern uint   GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
         [DllImport("user32.dll")] public static extern bool   SetCursorPos(int X, int Y);
         [DllImport("user32.dll")] public static extern bool   GetCursorPos(out POINT lpPoint);
         [DllImport("user32.dll")] public static extern uint   SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
         [DllImport("user32.dll")] public static extern void   mouse_event(uint dwFlags, int dx, int dy, uint dwData, int dwExtraInfo);
+        [DllImport("user32.dll")] public static extern bool   AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
+        [DllImport("user32.dll")] public static extern IntPtr SetFocus(IntPtr hWnd);
+        [DllImport("kernel32.dll")] public static extern uint GetCurrentThreadId();
 
         public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
@@ -53,6 +57,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         [DllImport("user32.dll")] public static extern bool   BringWindowToTop(IntPtr hWnd);
         [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
         [DllImport("user32.dll")] public static extern short  GetAsyncKeyState(int vKey);
+        [DllImport("user32.dll")] public static extern IntPtr WindowFromPoint(POINT point);
 
         public const int VK_LBUTTON = 0x01;
 
