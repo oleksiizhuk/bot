@@ -55,10 +55,20 @@ namespace Auto_Loot_RF_by_Yasir_Haq
 
             this.labelStatus = new System.Windows.Forms.Label();
 
-            this.labelWindowSec        = new System.Windows.Forms.Label();
-            this.comboBoxWindow        = new System.Windows.Forms.ComboBox();
-            this.buttonRefreshWindows  = new System.Windows.Forms.Button();
-            this.buttonPickWindow      = new System.Windows.Forms.Button();
+            this.labelWindowSec       = new System.Windows.Forms.Label();
+            this.buttonRefreshWindows = new System.Windows.Forms.Button();
+
+            this.checkBoxWnd1      = new System.Windows.Forms.CheckBox();
+            this.comboBoxWindow    = new System.Windows.Forms.ComboBox();
+            this.buttonPickWindow  = new System.Windows.Forms.Button();
+
+            this.checkBoxWnd2      = new System.Windows.Forms.CheckBox();
+            this.comboBoxWindow2   = new System.Windows.Forms.ComboBox();
+            this.buttonPickWindow2 = new System.Windows.Forms.Button();
+
+            this.checkBoxWnd3      = new System.Windows.Forms.CheckBox();
+            this.comboBoxWindow3   = new System.Windows.Forms.ComboBox();
+            this.buttonPickWindow3 = new System.Windows.Forms.Button();
 
             this.panelDetect          = new System.Windows.Forms.Panel();
             this.labelDetectSec       = new System.Windows.Forms.Label();
@@ -104,34 +114,27 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.labelSubtitle.Text      = "RF Online Automation Tool";
             this.labelSubtitle.Font      = new System.Drawing.Font("Segoe UI", 8.25F);
 
-            // ── panelWindow (y=65, h=42) ─────────────────────────────────
+            // ── panelWindow (y=65, h=116) — three window rows ─────────────
             this.panelWindow.Location = new System.Drawing.Point(10, 65);
-            this.panelWindow.Size     = new System.Drawing.Size(480, 42);
+            this.panelWindow.Size     = new System.Drawing.Size(480, 116);
             this.panelWindow.Controls.Add(this.labelWindowSec);
+            this.panelWindow.Controls.Add(this.buttonRefreshWindows);
+            this.panelWindow.Controls.Add(this.checkBoxWnd1);
             this.panelWindow.Controls.Add(this.comboBoxWindow);
             this.panelWindow.Controls.Add(this.buttonPickWindow);
-            this.panelWindow.Controls.Add(this.buttonRefreshWindows);
+            this.panelWindow.Controls.Add(this.checkBoxWnd2);
+            this.panelWindow.Controls.Add(this.comboBoxWindow2);
+            this.panelWindow.Controls.Add(this.buttonPickWindow2);
+            this.panelWindow.Controls.Add(this.checkBoxWnd3);
+            this.panelWindow.Controls.Add(this.comboBoxWindow3);
+            this.panelWindow.Controls.Add(this.buttonPickWindow3);
 
             this.labelWindowSec.AutoSize = true;
             this.labelWindowSec.Location = new System.Drawing.Point(12, 6);
-            this.labelWindowSec.Text     = "TARGET WINDOW";
+            this.labelWindowSec.Text     = "TARGET WINDOWS";
             this.labelWindowSec.Font     = new System.Drawing.Font("Segoe UI", 7.5F, System.Drawing.FontStyle.Bold);
 
-            this.comboBoxWindow.Location      = new System.Drawing.Point(112, 2);
-            this.comboBoxWindow.Size          = new System.Drawing.Size(196, 22);
-            this.comboBoxWindow.Font          = new System.Drawing.Font("Segoe UI", 8.5F);
-            this.comboBoxWindow.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxWindow.FlatStyle     = System.Windows.Forms.FlatStyle.Flat;
-
-            this.buttonPickWindow.Location  = new System.Drawing.Point(314, 1);
-            this.buttonPickWindow.Size      = new System.Drawing.Size(52, 24);
-            this.buttonPickWindow.Text      = "Pick";
-            this.buttonPickWindow.Font      = new System.Drawing.Font("Segoe UI", 8.5F);
-            this.buttonPickWindow.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonPickWindow.Cursor    = System.Windows.Forms.Cursors.Hand;
-            this.buttonPickWindow.Click    += new System.EventHandler(this.buttonPickWindow_Click);
-
-            this.buttonRefreshWindows.Location  = new System.Drawing.Point(372, 1);
+            this.buttonRefreshWindows.Location  = new System.Drawing.Point(372, 3);
             this.buttonRefreshWindows.Size      = new System.Drawing.Size(96, 24);
             this.buttonRefreshWindows.Text      = "↻ Refresh";
             this.buttonRefreshWindows.Font      = new System.Drawing.Font("Segoe UI", 8.5F);
@@ -139,8 +142,71 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.buttonRefreshWindows.Cursor    = System.Windows.Forms.Cursors.Hand;
             this.buttonRefreshWindows.Click    += new System.EventHandler(this.buttonRefreshWindows_Click);
 
-            // ── panelKeys (y=112, h=215) ─────────────────────────────────
-            this.panelKeys.Location = new System.Drawing.Point(10, 112);
+            // Row 1
+            this.checkBoxWnd1.AutoSize = true;
+            this.checkBoxWnd1.Location = new System.Drawing.Point(12, 31);
+            this.checkBoxWnd1.Text     = "#1";
+            this.checkBoxWnd1.Checked  = true;
+            this.checkBoxWnd1.Font     = new System.Drawing.Font("Segoe UI", 8.5F);
+
+            this.comboBoxWindow.Location      = new System.Drawing.Point(50, 28);
+            this.comboBoxWindow.Size          = new System.Drawing.Size(196, 22);
+            this.comboBoxWindow.Font          = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.comboBoxWindow.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxWindow.FlatStyle     = System.Windows.Forms.FlatStyle.Flat;
+
+            this.buttonPickWindow.Location  = new System.Drawing.Point(252, 27);
+            this.buttonPickWindow.Size      = new System.Drawing.Size(52, 24);
+            this.buttonPickWindow.Text      = "Pick";
+            this.buttonPickWindow.Font      = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.buttonPickWindow.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonPickWindow.Cursor    = System.Windows.Forms.Cursors.Hand;
+            this.buttonPickWindow.Click    += new System.EventHandler(this.buttonPickWindow_Click);
+
+            // Row 2
+            this.checkBoxWnd2.AutoSize = true;
+            this.checkBoxWnd2.Location = new System.Drawing.Point(12, 59);
+            this.checkBoxWnd2.Text     = "#2";
+            this.checkBoxWnd2.Checked  = false;
+            this.checkBoxWnd2.Font     = new System.Drawing.Font("Segoe UI", 8.5F);
+
+            this.comboBoxWindow2.Location      = new System.Drawing.Point(50, 56);
+            this.comboBoxWindow2.Size          = new System.Drawing.Size(196, 22);
+            this.comboBoxWindow2.Font          = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.comboBoxWindow2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxWindow2.FlatStyle     = System.Windows.Forms.FlatStyle.Flat;
+
+            this.buttonPickWindow2.Location  = new System.Drawing.Point(252, 55);
+            this.buttonPickWindow2.Size      = new System.Drawing.Size(52, 24);
+            this.buttonPickWindow2.Text      = "Pick";
+            this.buttonPickWindow2.Font      = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.buttonPickWindow2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonPickWindow2.Cursor    = System.Windows.Forms.Cursors.Hand;
+            this.buttonPickWindow2.Click    += new System.EventHandler(this.buttonPickWindow2_Click);
+
+            // Row 3
+            this.checkBoxWnd3.AutoSize = true;
+            this.checkBoxWnd3.Location = new System.Drawing.Point(12, 87);
+            this.checkBoxWnd3.Text     = "#3";
+            this.checkBoxWnd3.Checked  = false;
+            this.checkBoxWnd3.Font     = new System.Drawing.Font("Segoe UI", 8.5F);
+
+            this.comboBoxWindow3.Location      = new System.Drawing.Point(50, 84);
+            this.comboBoxWindow3.Size          = new System.Drawing.Size(196, 22);
+            this.comboBoxWindow3.Font          = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.comboBoxWindow3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxWindow3.FlatStyle     = System.Windows.Forms.FlatStyle.Flat;
+
+            this.buttonPickWindow3.Location  = new System.Drawing.Point(252, 83);
+            this.buttonPickWindow3.Size      = new System.Drawing.Size(52, 24);
+            this.buttonPickWindow3.Text      = "Pick";
+            this.buttonPickWindow3.Font      = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.buttonPickWindow3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonPickWindow3.Cursor    = System.Windows.Forms.Cursors.Hand;
+            this.buttonPickWindow3.Click    += new System.EventHandler(this.buttonPickWindow3_Click);
+
+            // ── panelKeys (y=186, h=215) ─────────────────────────────────
+            this.panelKeys.Location = new System.Drawing.Point(10, 186);
             this.panelKeys.Size     = new System.Drawing.Size(480, 215);
             this.panelKeys.Controls.Add(this.labelKeysSec);
             this.panelKeys.Controls.Add(this.labelTargetCoords);
@@ -165,7 +231,6 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.labelKeysSec.Text     = "KEY BINDINGS";
             this.labelKeysSec.Font     = new System.Drawing.Font("Segoe UI", 7.5F, System.Drawing.FontStyle.Bold);
 
-            // Click coords
             this.labelTargetCoords.AutoSize = true;
             this.labelTargetCoords.Location = new System.Drawing.Point(12, 22);
             this.labelTargetCoords.Text     = "Click Coords";
@@ -203,13 +268,11 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.buttonPickCoords.Cursor    = System.Windows.Forms.Cursors.Hand;
             this.buttonPickCoords.Click    += new System.EventHandler(this.buttonPickCoords_Click);
 
-            // Pick button ends at y≈66; Attack Sequence starts 100px below → y=166
             this.labelAttackKey.AutoSize = true;
             this.labelAttackKey.Location = new System.Drawing.Point(12, 166);
             this.labelAttackKey.Text     = "Attack Sequence  (RMB · LMB · F1 ...)";
             this.labelAttackKey.Font     = new System.Drawing.Font("Segoe UI", 8F);
 
-            // 5 attack boxes: 50px wide, 6px gap → x=12,68,124,180,236
             this.textBoxAttack1.Location  = new System.Drawing.Point(12,  184);
             this.textBoxAttack1.Size      = new System.Drawing.Size(50, 24);
             this.textBoxAttack1.Text      = "LMB";
@@ -244,13 +307,13 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.labelKeyDelay.Location = new System.Drawing.Point(296, 166);
             this.labelKeyDelay.Text     = "Delay (ms)";
             this.labelKeyDelay.Font     = new System.Drawing.Font("Segoe UI", 8F);
-            this.numericKeyDelay.Location = new System.Drawing.Point(296, 184);
-            this.numericKeyDelay.Size     = new System.Drawing.Size(64, 24);
-            this.numericKeyDelay.Minimum  = 0;
-            this.numericKeyDelay.Maximum  = 2000;
-            this.numericKeyDelay.Value    = 1500;
+            this.numericKeyDelay.Location  = new System.Drawing.Point(296, 184);
+            this.numericKeyDelay.Size      = new System.Drawing.Size(64, 24);
+            this.numericKeyDelay.Minimum   = 0;
+            this.numericKeyDelay.Maximum   = 2000;
+            this.numericKeyDelay.Value     = 1500;
             this.numericKeyDelay.Increment = 50;
-            this.numericKeyDelay.Font     = new System.Drawing.Font("Segoe UI", 9F);
+            this.numericKeyDelay.Font      = new System.Drawing.Font("Segoe UI", 9F);
 
             this.labelLootKey.AutoSize = true;
             this.labelLootKey.Location = new System.Drawing.Point(370, 166);
@@ -262,8 +325,8 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.textBoxLootKey.Font      = new System.Drawing.Font("Segoe UI", 9.5F);
             this.textBoxLootKey.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 
-            // ── panelTiming (y=337, h=70) ────────────────────────────────
-            this.panelTiming.Location = new System.Drawing.Point(10, 337);
+            // ── panelTiming (y=411, h=70) ────────────────────────────────
+            this.panelTiming.Location = new System.Drawing.Point(10, 411);
             this.panelTiming.Size     = new System.Drawing.Size(480, 70);
             this.panelTiming.Controls.Add(this.labelTimingSec);
             this.panelTiming.Controls.Add(this.labelKillTime);
@@ -308,8 +371,8 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.labelLootUnit.Text     = "sec";
             this.labelLootUnit.Font     = new System.Drawing.Font("Segoe UI", 8.25F);
 
-            // ── panelButtons (y=417, h=68) ───────────────────────────────
-            this.panelButtons.Location = new System.Drawing.Point(10, 417);
+            // ── panelButtons (y=491, h=68) ───────────────────────────────
+            this.panelButtons.Location = new System.Drawing.Point(10, 491);
             this.panelButtons.Size     = new System.Drawing.Size(480, 68);
             this.panelButtons.Controls.Add(this.buttonLoot);
             this.panelButtons.Controls.Add(this.buttonKillLoot);
@@ -330,8 +393,8 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.buttonKillLoot.Cursor    = System.Windows.Forms.Cursors.Hand;
             this.buttonKillLoot.Click    += new System.EventHandler(this.buttonKillLoot_Click);
 
-            // ── panelStatus (y=495, h=44) ────────────────────────────────
-            this.panelStatus.Location = new System.Drawing.Point(0, 495);
+            // ── panelStatus (y=569, h=44) ────────────────────────────────
+            this.panelStatus.Location = new System.Drawing.Point(0, 569);
             this.panelStatus.Size     = new System.Drawing.Size(500, 44);
             this.panelStatus.Controls.Add(this.labelStatus);
 
@@ -344,7 +407,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             // ── Form ─────────────────────────────────────────────────────
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode       = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize          = new System.Drawing.Size(500, 669);
+            this.ClientSize          = new System.Drawing.Size(500, 743);
             this.FormBorderStyle     = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.KeyPreview          = true;
             this.MaximizeBox         = false;
@@ -352,8 +415,8 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.Text                = "RF Auto Loot";
             this.StartPosition       = System.Windows.Forms.FormStartPosition.CenterScreen;
 
-            // ── panelDetect (y=542, h=122) ───────────────────────────────
-            this.panelDetect.Location = new System.Drawing.Point(10, 542);
+            // ── panelDetect (y=616, h=122) ───────────────────────────────
+            this.panelDetect.Location = new System.Drawing.Point(10, 616);
             this.panelDetect.Size     = new System.Drawing.Size(480, 122);
             this.panelDetect.Controls.Add(this.labelDetectSec);
             this.panelDetect.Controls.Add(this.labelThreshold);
@@ -413,9 +476,9 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.listBoxTemplates.SelectedIndexChanged += new System.EventHandler(this.listBoxTemplates_SelectedIndexChanged);
             this.listBoxTemplates.DoubleClick          += new System.EventHandler(this.listBoxTemplates_DoubleClick);
 
-            this.pictureBoxTemplate.Location  = new System.Drawing.Point(234, 58);
-            this.pictureBoxTemplate.Size      = new System.Drawing.Size(234, 58);
-            this.pictureBoxTemplate.SizeMode  = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxTemplate.Location    = new System.Drawing.Point(234, 58);
+            this.pictureBoxTemplate.Size        = new System.Drawing.Size(234, 58);
+            this.pictureBoxTemplate.SizeMode    = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxTemplate.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
@@ -454,9 +517,16 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         private System.Windows.Forms.Panel          panelHeader;
         private System.Windows.Forms.Panel          panelWindow;
         private System.Windows.Forms.Label          labelWindowSec;
-        private System.Windows.Forms.ComboBox       comboBoxWindow;
         private System.Windows.Forms.Button         buttonRefreshWindows;
+        private System.Windows.Forms.CheckBox       checkBoxWnd1;
+        private System.Windows.Forms.ComboBox       comboBoxWindow;
         private System.Windows.Forms.Button         buttonPickWindow;
+        private System.Windows.Forms.CheckBox       checkBoxWnd2;
+        private System.Windows.Forms.ComboBox       comboBoxWindow2;
+        private System.Windows.Forms.Button         buttonPickWindow2;
+        private System.Windows.Forms.CheckBox       checkBoxWnd3;
+        private System.Windows.Forms.ComboBox       comboBoxWindow3;
+        private System.Windows.Forms.Button         buttonPickWindow3;
         private System.Windows.Forms.Panel          panelKeys;
         private System.Windows.Forms.Panel          panelTiming;
         private System.Windows.Forms.Panel          panelButtons;

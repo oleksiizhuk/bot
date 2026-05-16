@@ -21,23 +21,34 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         static readonly Color C_ORANGE = Color.FromArgb(185, 115, 0);
         static readonly Color C_RED    = Color.FromArgb(185, 42,  42);
 
-        private readonly LootBot        _bot           = new LootBot();
-        private readonly MobDetector    _detector      = new MobDetector();
-        private readonly List<IntPtr>   _windowHandles = new List<IntPtr>();
+        private readonly LootBot[]      _bots       = new[] { new LootBot(), new LootBot(), new LootBot() };
+        private readonly MobDetector    _detector   = new MobDetector();
+        private readonly List<IntPtr>[] _wndHandles = new[] { new List<IntPtr>(), new List<IntPtr>(), new List<IntPtr>() };
         private static readonly string TemplatesDir =
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "templates");
 
-        private readonly System.Windows.Forms.Timer _pickTimer      = new System.Windows.Forms.Timer { Interval = 50 };
-        private readonly System.Windows.Forms.Timer _pickWndTimer   = new System.Windows.Forms.Timer { Interval = 50 };
-        private bool _picking;
-        private bool _pickReady;
-        private bool _pickingWindow;
-        private bool _pickWindowReady;
+        private ComboBox[] _wndCombos;
+        private CheckBox[] _wndChecks;
+        private Button[]   _pickBtns;
+
+        private readonly System.Windows.Forms.Timer _pickTimer    = new System.Windows.Forms.Timer { Interval = 50 };
+        private readonly System.Windows.Forms.Timer _pickWndTimer = new System.Windows.Forms.Timer { Interval = 50 };
+        private bool   _picking;
+        private bool   _pickReady;
+        private bool   _pickingWindow;
+        private bool   _pickWindowReady;
         private IntPtr _pickedHwnd;
+        private int    _pickWindowIndex = -1;
+        private Button _currentPickBtn;
 
         public Form1()
         {
             InitializeComponent();
+
+            _wndCombos = new[] { comboBoxWindow, comboBoxWindow2, comboBoxWindow3 };
+            _wndChecks = new[] { checkBoxWnd1, checkBoxWnd2, checkBoxWnd3 };
+            _pickBtns  = new[] { buttonPickWindow, buttonPickWindow2, buttonPickWindow3 };
+
             _pickTimer.Tick    += OnPickTick;
             _pickWndTimer.Tick += OnPickWindowTick;
             try { ApplyTheme(); RefreshWindowList(); UpdateStatus(); LoadTemplates(); }
@@ -103,24 +114,36 @@ namespace Auto_Loot_RF_by_Yasir_Haq
                 nu.ForeColor = C_TEXT;
             }
 
-            comboBoxWindow.BackColor = C_INPUT;
-            comboBoxWindow.ForeColor = C_TEXT;
+            foreach (var cb in _wndCombos)
+            {
+                cb.BackColor = C_INPUT;
+                cb.ForeColor = C_TEXT;
+            }
 
-            buttonPickWindow.BackColor                  = C_PANEL;
-            buttonPickWindow.ForeColor                  = C_TEXT;
-            buttonPickWindow.FlatAppearance.BorderColor = C_DIM;
+            foreach (var chk in _wndChecks)
+            {
+                chk.ForeColor = C_DIM;
+                chk.BackColor = Color.Transparent;
+            }
+
+            foreach (var btn in _pickBtns)
+            {
+                btn.BackColor                  = C_PANEL;
+                btn.ForeColor                  = C_TEXT;
+                btn.FlatAppearance.BorderColor = C_DIM;
+            }
 
             buttonRefreshWindows.BackColor                  = C_PANEL;
             buttonRefreshWindows.ForeColor                  = C_TEXT;
             buttonRefreshWindows.FlatAppearance.BorderColor = C_DIM;
 
-            buttonPickCoords.BackColor                    = C_PANEL;
-            buttonPickCoords.ForeColor                    = C_TEXT;
-            buttonPickCoords.FlatAppearance.BorderColor   = C_DIM;
+            buttonPickCoords.BackColor                  = C_PANEL;
+            buttonPickCoords.ForeColor                  = C_TEXT;
+            buttonPickCoords.FlatAppearance.BorderColor = C_DIM;
 
-            buttonLoot.BackColor                    = C_GREEN;
-            buttonLoot.ForeColor                    = Color.White;
-            buttonLoot.FlatAppearance.BorderColor   = C_GREEN;
+            buttonLoot.BackColor                  = C_GREEN;
+            buttonLoot.ForeColor                  = Color.White;
+            buttonLoot.FlatAppearance.BorderColor = C_GREEN;
 
             buttonKillLoot.BackColor                  = C_ORANGE;
             buttonKillLoot.ForeColor                  = Color.White;
@@ -135,39 +158,42 @@ namespace Auto_Loot_RF_by_Yasir_Haq
                 using (var b = new SolidBrush(C_ACCENT))
                     e.Graphics.FillRectangle(b, 0, 0, 3, panelDetect.Height);
             };
-            labelDetectSec.ForeColor   = C_ACCENT; labelDetectSec.BackColor   = Color.Transparent;
-            labelThreshold.ForeColor   = C_DIM;    labelThreshold.BackColor   = Color.Transparent;
-            checkBoxAutoTarget.ForeColor = C_DIM;  checkBoxAutoTarget.BackColor = Color.Transparent;
-            numericThreshold.BackColor = C_INPUT;  numericThreshold.ForeColor = C_TEXT;
-            listBoxTemplates.BackColor = C_INPUT;  listBoxTemplates.ForeColor = C_TEXT;
+            labelDetectSec.ForeColor     = C_ACCENT; labelDetectSec.BackColor     = Color.Transparent;
+            labelThreshold.ForeColor     = C_DIM;    labelThreshold.BackColor     = Color.Transparent;
+            checkBoxAutoTarget.ForeColor = C_DIM;    checkBoxAutoTarget.BackColor = Color.Transparent;
+            numericThreshold.BackColor   = C_INPUT;  numericThreshold.ForeColor   = C_TEXT;
+            listBoxTemplates.BackColor   = C_INPUT;  listBoxTemplates.ForeColor   = C_TEXT;
             pictureBoxTemplate.BackColor = C_INPUT;
-            buttonSnipTemplate.BackColor = C_PANEL;
-            buttonSnipTemplate.ForeColor = C_TEXT;
+            buttonSnipTemplate.BackColor                  = C_PANEL;
+            buttonSnipTemplate.ForeColor                  = C_TEXT;
             buttonSnipTemplate.FlatAppearance.BorderColor = C_DIM;
-            buttonRemoveTemplate.BackColor = C_RED;
-            buttonRemoveTemplate.ForeColor = Color.White;
+            buttonRemoveTemplate.BackColor                  = C_RED;
+            buttonRemoveTemplate.ForeColor                  = Color.White;
             buttonRemoveTemplate.FlatAppearance.BorderColor = C_RED;
         }
 
-        // ── Button handlers ───────────────────────────────────────────────
+        // ── Window list ───────────────────────────────────────────────────
         private void RefreshWindowList()
         {
-            _windowHandles.Clear();
-            comboBoxWindow.Items.Clear();
-            foreach (var hwnd in GameFinder.FindAll())
+            var hwnds  = new List<IntPtr>(GameFinder.FindAll());
+            var titles = hwnds.ConvertAll(h => GameFinder.GetWindowTitle(h));
+
+            for (int i = 0; i < 3; i++)
             {
-                _windowHandles.Add(hwnd);
-                comboBoxWindow.Items.Add(GameFinder.GetWindowTitle(hwnd));
+                _wndHandles[i].Clear();
+                _wndCombos[i].Items.Clear();
+                _wndHandles[i].AddRange(hwnds);
+                foreach (var t in titles) _wndCombos[i].Items.Add(t);
+                if (_wndCombos[i].Items.Count > 0)
+                    _wndCombos[i].SelectedIndex = Math.Min(i, _wndCombos[i].Items.Count - 1);
             }
-            if (comboBoxWindow.Items.Count > 0)
-                comboBoxWindow.SelectedIndex = 0;
         }
 
-        private IntPtr GetSelectedHwnd()
+        private IntPtr GetSelectedHwnd(int index)
         {
-            int idx = comboBoxWindow.SelectedIndex;
-            if (idx < 0 || idx >= _windowHandles.Count) return IntPtr.Zero;
-            return _windowHandles[idx];
+            int idx = _wndCombos[index].SelectedIndex;
+            if (idx < 0 || idx >= _wndHandles[index].Count) return IntPtr.Zero;
+            return _wndHandles[index][idx];
         }
 
         private void buttonRefreshWindows_Click(object sender, EventArgs e)
@@ -175,15 +201,26 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             RefreshWindowList();
         }
 
-        private void buttonPickWindow_Click(object sender, EventArgs e)
+        // ── Pick window ───────────────────────────────────────────────────
+        private void buttonPickWindow_Click(object sender, EventArgs e)  { BeginPickWindow(0, buttonPickWindow); }
+        private void buttonPickWindow2_Click(object sender, EventArgs e) { BeginPickWindow(1, buttonPickWindow2); }
+        private void buttonPickWindow3_Click(object sender, EventArgs e) { BeginPickWindow(2, buttonPickWindow3); }
+
+        private void BeginPickWindow(int index, Button btn)
         {
-            if (_pickingWindow) { StopPickingWindow(cancel: true); return; }
-            _pickingWindow    = true;
-            _pickWindowReady  = false;
-            _pickedHwnd       = IntPtr.Zero;
-            buttonPickWindow.Text      = "Cancel";
-            buttonPickWindow.BackColor = C_RED;
-            buttonPickWindow.FlatAppearance.BorderColor = C_RED;
+            if (_pickingWindow)
+            {
+                StopPickingWindow(cancel: true);
+                if (_pickWindowIndex == index) return;
+            }
+            _pickWindowIndex = index;
+            _currentPickBtn  = btn;
+            _pickingWindow   = true;
+            _pickWindowReady = false;
+            _pickedHwnd      = IntPtr.Zero;
+            btn.Text                       = "Cancel";
+            btn.BackColor                  = C_RED;
+            btn.FlatAppearance.BorderColor = C_RED;
             _pickWndTimer.Start();
         }
 
@@ -208,50 +245,80 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             _pickWndTimer.Stop();
             _pickingWindow   = false;
             _pickWindowReady = false;
-            buttonPickWindow.Text      = "Pick";
-            buttonPickWindow.BackColor = C_PANEL;
-            buttonPickWindow.FlatAppearance.BorderColor = C_DIM;
 
-            if (!cancel && _pickedHwnd != IntPtr.Zero)
+            var btn = _currentPickBtn;
+            if (btn != null)
+            {
+                btn.Text                       = "Pick";
+                btn.BackColor                  = C_PANEL;
+                btn.FlatAppearance.BorderColor = C_DIM;
+            }
+
+            if (!cancel && _pickedHwnd != IntPtr.Zero && _pickWindowIndex >= 0)
             {
                 string title = GameFinder.GetWindowTitle(_pickedHwnd);
-                _windowHandles.Clear();
-                comboBoxWindow.Items.Clear();
-                _windowHandles.Add(_pickedHwnd);
-                comboBoxWindow.Items.Add(title);
-                comboBoxWindow.SelectedIndex = 0;
+                _wndHandles[_pickWindowIndex].Clear();
+                _wndCombos[_pickWindowIndex].Items.Clear();
+                _wndHandles[_pickWindowIndex].Add(_pickedHwnd);
+                _wndCombos[_pickWindowIndex].Items.Add(title);
+                _wndCombos[_pickWindowIndex].SelectedIndex = 0;
             }
+            _pickWindowIndex = -1;
+            _currentPickBtn  = null;
         }
 
+        // ── Bot start / stop ──────────────────────────────────────────────
         private void buttonLoot_Click(object sender, EventArgs e)
         {
-            if (_bot.IsLootActive) { _bot.Stop(); UpdateUI(); return; }
+            if (Array.Exists(_bots, b => b.IsLootActive))
+            {
+                foreach (var b in _bots) b.Stop();
+                UpdateUI();
+                return;
+            }
 
-            var hwnd = GetSelectedHwnd();
-            if (hwnd == IntPtr.Zero) { ShowNoGameWarning(); return; }
-
-            _bot.StartLoot(hwnd, textBoxLootKey.Text);
+            bool anyStarted = false;
+            for (int i = 0; i < 3; i++)
+            {
+                if (!_wndChecks[i].Checked) continue;
+                var hwnd = GetSelectedHwnd(i);
+                if (hwnd == IntPtr.Zero) continue;
+                _bots[i].StartLoot(hwnd, textBoxLootKey.Text);
+                anyStarted = true;
+            }
+            if (!anyStarted) ShowNoGameWarning();
             UpdateUI();
         }
 
         private void buttonKillLoot_Click(object sender, EventArgs e)
         {
-            if (_bot.IsKillLootActive) { _bot.Stop(); UpdateUI(); return; }
+            if (Array.Exists(_bots, b => b.IsKillLootActive))
+            {
+                foreach (var b in _bots) b.Stop();
+                UpdateUI();
+                return;
+            }
 
-            var hwnd = GetSelectedHwnd();
-            if (hwnd == IntPtr.Zero) { ShowNoGameWarning(); return; }
-
-            _bot.Detector = checkBoxAutoTarget.Checked ? _detector : null;
-            _bot.StartKillLoot(
-                hwnd,
-                new[] { textBoxAttack1.Text, textBoxAttack2.Text, textBoxAttack3.Text,
-                         textBoxAttack4.Text, textBoxAttack5.Text },
-                textBoxLootKey.Text,
-                (int)numericKillTime.Value,
-                (int)numericLootTime.Value,
-                (int)numericTargetX.Value,
-                (int)numericTargetY.Value,
-                (int)numericKeyDelay.Value);
+            bool anyStarted = false;
+            for (int i = 0; i < 3; i++)
+            {
+                if (!_wndChecks[i].Checked) continue;
+                var hwnd = GetSelectedHwnd(i);
+                if (hwnd == IntPtr.Zero) continue;
+                _bots[i].Detector = checkBoxAutoTarget.Checked ? _detector : null;
+                _bots[i].StartKillLoot(
+                    hwnd,
+                    new[] { textBoxAttack1.Text, textBoxAttack2.Text, textBoxAttack3.Text,
+                             textBoxAttack4.Text, textBoxAttack5.Text },
+                    textBoxLootKey.Text,
+                    (int)numericKillTime.Value,
+                    (int)numericLootTime.Value,
+                    (int)numericTargetX.Value,
+                    (int)numericTargetY.Value,
+                    (int)numericKeyDelay.Value);
+                anyStarted = true;
+            }
+            if (!anyStarted) ShowNoGameWarning();
             UpdateUI();
         }
 
@@ -363,8 +430,8 @@ namespace Auto_Loot_RF_by_Yasir_Haq
 
             _picking   = true;
             _pickReady = false;
-            buttonPickCoords.Text      = "Cancel";
-            buttonPickCoords.BackColor = C_RED;
+            buttonPickCoords.Text                       = "Cancel";
+            buttonPickCoords.BackColor                  = C_RED;
             buttonPickCoords.FlatAppearance.BorderColor = C_RED;
             _pickTimer.Start();
         }
@@ -375,7 +442,6 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             numericTargetX.Value = Math.Max(numericTargetX.Minimum, Math.Min(numericTargetX.Maximum, pos.X));
             numericTargetY.Value = Math.Max(numericTargetY.Minimum, Math.Min(numericTargetY.Maximum, pos.Y));
 
-            // skip first few ticks so we don't capture the Pick button click itself
             if (!_pickReady) { _pickReady = (Win32.GetAsyncKeyState(Win32.VK_LBUTTON) & 0x8000) == 0; return; }
 
             if ((Win32.GetAsyncKeyState(Win32.VK_LBUTTON) & 0x8000) != 0)
@@ -387,8 +453,8 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             _pickTimer.Stop();
             _picking   = false;
             _pickReady = false;
-            buttonPickCoords.Text      = "Pick";
-            buttonPickCoords.BackColor = C_PANEL;
+            buttonPickCoords.Text                       = "Pick";
+            buttonPickCoords.BackColor                  = C_PANEL;
             buttonPickCoords.FlatAppearance.BorderColor = C_DIM;
         }
 
@@ -397,49 +463,59 @@ namespace Auto_Loot_RF_by_Yasir_Haq
 
         private void ShowNoGameWarning()
         {
-            MessageBox.Show("RF Online window not found.\nPlease start the game first.",
+            MessageBox.Show("RF Online window not found.\nPlease start the game and select a window.",
                 "RF Auto Loot", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void UpdateButtonStates()
         {
-            if (_bot.IsLootActive)
+            bool anyLoot     = Array.Exists(_bots, b => b.IsLootActive);
+            bool anyKillLoot = Array.Exists(_bots, b => b.IsKillLootActive);
+
+            if (anyLoot)
             {
-                buttonLoot.Text = "  STOP LOOT";
-                buttonLoot.BackColor = C_RED;
+                buttonLoot.Text                       = "  STOP LOOT";
+                buttonLoot.BackColor                  = C_RED;
                 buttonLoot.FlatAppearance.BorderColor = C_RED;
             }
             else
             {
-                buttonLoot.Text = "  START LOOT";
-                buttonLoot.BackColor = C_GREEN;
+                buttonLoot.Text                       = "  START LOOT";
+                buttonLoot.BackColor                  = C_GREEN;
                 buttonLoot.FlatAppearance.BorderColor = C_GREEN;
             }
 
-            if (_bot.IsKillLootActive)
+            if (anyKillLoot)
             {
-                buttonKillLoot.Text = "  STOP";
-                buttonKillLoot.BackColor = C_RED;
+                buttonKillLoot.Text                       = "  STOP";
+                buttonKillLoot.BackColor                  = C_RED;
                 buttonKillLoot.FlatAppearance.BorderColor = C_RED;
             }
             else
             {
-                buttonKillLoot.Text = "  KILL + LOOT";
-                buttonKillLoot.BackColor = C_ORANGE;
+                buttonKillLoot.Text                       = "  KILL + LOOT";
+                buttonKillLoot.BackColor                  = C_ORANGE;
                 buttonKillLoot.FlatAppearance.BorderColor = C_ORANGE;
             }
         }
 
         private void UpdateStatus()
         {
-            if (_bot.IsLootActive)
+            int lootCount     = Array.FindAll(_bots, b => b.IsLootActive).Length;
+            int killLootCount = Array.FindAll(_bots, b => b.IsKillLootActive).Length;
+
+            if (lootCount > 0)
             {
-                labelStatus.Text      = "●  Looting active";
+                labelStatus.Text = lootCount > 1
+                    ? "●  Looting active  (" + lootCount + " windows)"
+                    : "●  Looting active";
                 labelStatus.ForeColor = C_GREEN;
             }
-            else if (_bot.IsKillLootActive)
+            else if (killLootCount > 0)
             {
-                labelStatus.Text      = "●  Kill + Loot active";
+                labelStatus.Text = killLootCount > 1
+                    ? "●  Kill + Loot active  (" + killLootCount + " windows)"
+                    : "●  Kill + Loot active";
                 labelStatus.ForeColor = C_GREEN;
             }
             else
