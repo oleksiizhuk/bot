@@ -23,9 +23,14 @@ namespace Auto_Loot_RF_by_Yasir_Haq
 
         private readonly LootBot[]      _bots       = new[] { new LootBot(), new LootBot(), new LootBot() };
         private readonly MobDetector    _detector   = new MobDetector();
+        private YoloDetector            _yolo;
         private readonly List<IntPtr>[] _wndHandles = new[] { new List<IntPtr>(), new List<IntPtr>(), new List<IntPtr>() };
         private static readonly string TemplatesDir =
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "templates");
+        private static readonly string DatasetDir =
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dataset");
+        private static readonly string YoloModelPath =
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "mobs.onnx");
 
         private ComboBox[] _wndCombos;
         private CheckBox[] _wndChecks;
@@ -51,7 +56,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
 
             _pickTimer.Tick    += OnPickTick;
             _pickWndTimer.Tick += OnPickWindowTick;
-            try { ApplyTheme(); RefreshWindowList(); UpdateStatus(); LoadTemplates(); }
+            try { ApplyTheme(); RefreshWindowList(); UpdateStatus(); LoadTemplates(); LoadYoloModel(); }
             catch (Exception ex)
             {
                 MessageBox.Show("Startup error:\n\n" + ex.Message, "RF Auto Loot",
@@ -161,6 +166,9 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             labelDetectSec.ForeColor     = C_ACCENT; labelDetectSec.BackColor     = Color.Transparent;
             labelThreshold.ForeColor     = C_DIM;    labelThreshold.BackColor     = Color.Transparent;
             checkBoxAutoTarget.ForeColor = C_DIM;    checkBoxAutoTarget.BackColor = Color.Transparent;
+            checkBoxMotion.ForeColor     = C_DIM;    checkBoxMotion.BackColor     = Color.Transparent;
+            checkBoxDataset.ForeColor    = C_DIM;    checkBoxDataset.BackColor    = Color.Transparent;
+            checkBoxYolo.ForeColor       = C_ACCENT; checkBoxYolo.BackColor       = Color.Transparent;
             numericThreshold.BackColor   = C_INPUT;  numericThreshold.ForeColor   = C_TEXT;
             listBoxTemplates.BackColor   = C_INPUT;  listBoxTemplates.ForeColor   = C_TEXT;
             pictureBoxTemplate.BackColor = C_INPUT;
@@ -305,7 +313,12 @@ namespace Auto_Loot_RF_by_Yasir_Haq
                 if (!_wndChecks[i].Checked) continue;
                 var hwnd = GetSelectedHwnd(i);
                 if (hwnd == IntPtr.Zero) continue;
-                _bots[i].Detector = checkBoxAutoTarget.Checked ? _detector : null;
+                _bots[i].Detector     = (checkBoxAutoTarget.Checked || checkBoxMotion.Checked) ? _detector : null;
+                _bots[i].Yolo         = _yolo;
+                _bots[i].UseYolo      = checkBoxYolo.Checked && _yolo != null && _yolo.IsLoaded;
+                _bots[i].UseTemplates = checkBoxAutoTarget.Checked;
+                _bots[i].UseMotion    = checkBoxMotion.Checked;
+                _bots[i].DatasetDir   = checkBoxDataset.Checked ? DatasetDir : null;
                 _bots[i].StartKillLoot(
                     hwnd,
                     new[] { textBoxAttack1.Text, textBoxAttack2.Text, textBoxAttack3.Text,
@@ -337,6 +350,32 @@ namespace Auto_Loot_RF_by_Yasir_Haq
                 using (var bmp = new Bitmap(file))
                     _detector.AddTemplate(name, bmp);
                 listBoxTemplates.Items.Add(name);
+            }
+        }
+
+        private void LoadYoloModel()
+        {
+            if (!File.Exists(YoloModelPath))
+            {
+                checkBoxYolo.Enabled = false;
+                checkBoxYolo.Checked = false;
+                checkBoxYolo.Text    = "AI detect  (mobs.onnx not found)";
+                return;
+            }
+            try
+            {
+                _yolo = new YoloDetector(YoloModelPath);
+                checkBoxYolo.Text = "AI detect (neural net — best targeting)";
+            }
+            catch (Exception ex)
+            {
+                _yolo = null;
+                checkBoxYolo.Enabled = false;
+                checkBoxYolo.Checked = false;
+                checkBoxYolo.Text    = "AI detect  (model load failed)";
+                File.AppendAllText(
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "debug.log"),
+                    DateTime.Now + "  YOLO load error: " + ex.Message + "\r\n");
             }
         }
 

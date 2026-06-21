@@ -77,6 +77,9 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.buttonSnipTemplate   = new System.Windows.Forms.Button();
             this.buttonRemoveTemplate = new System.Windows.Forms.Button();
             this.checkBoxAutoTarget   = new System.Windows.Forms.CheckBox();
+            this.checkBoxMotion       = new System.Windows.Forms.CheckBox();
+            this.checkBoxDataset      = new System.Windows.Forms.CheckBox();
+            this.checkBoxYolo         = new System.Windows.Forms.CheckBox();
             this.listBoxTemplates     = new System.Windows.Forms.ListBox();
             this.pictureBoxTemplate   = new System.Windows.Forms.PictureBox();
 
@@ -311,7 +314,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.numericKeyDelay.Size      = new System.Drawing.Size(64, 24);
             this.numericKeyDelay.Minimum   = 0;
             this.numericKeyDelay.Maximum   = 2000;
-            this.numericKeyDelay.Value     = 1500;
+            this.numericKeyDelay.Value     = 500;
             this.numericKeyDelay.Increment = 50;
             this.numericKeyDelay.Font      = new System.Drawing.Font("Segoe UI", 9F);
 
@@ -349,7 +352,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.numericKillTime.Size     = new System.Drawing.Size(72, 24);
             this.numericKillTime.Minimum  = 1;
             this.numericKillTime.Maximum  = 60;
-            this.numericKillTime.Value    = 10;
+            this.numericKillTime.Value    = 5;
             this.numericKillTime.Font     = new System.Drawing.Font("Segoe UI", 9F);
             this.labelKillUnit.AutoSize = true;
             this.labelKillUnit.Location = new System.Drawing.Point(88, 50);
@@ -407,7 +410,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             // ── Form ─────────────────────────────────────────────────────
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode       = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize          = new System.Drawing.Size(500, 743);
+            this.ClientSize          = new System.Drawing.Size(500, 797);
             this.FormBorderStyle     = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.KeyPreview          = true;
             this.MaximizeBox         = false;
@@ -415,15 +418,18 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.Text                = "RF Auto Loot";
             this.StartPosition       = System.Windows.Forms.FormStartPosition.CenterScreen;
 
-            // ── panelDetect (y=616, h=122) ───────────────────────────────
+            // ── panelDetect (y=616, h=176) ───────────────────────────────
             this.panelDetect.Location = new System.Drawing.Point(10, 616);
-            this.panelDetect.Size     = new System.Drawing.Size(480, 122);
+            this.panelDetect.Size     = new System.Drawing.Size(480, 176);
             this.panelDetect.Controls.Add(this.labelDetectSec);
             this.panelDetect.Controls.Add(this.labelThreshold);
             this.panelDetect.Controls.Add(this.numericThreshold);
             this.panelDetect.Controls.Add(this.buttonSnipTemplate);
             this.panelDetect.Controls.Add(this.buttonRemoveTemplate);
             this.panelDetect.Controls.Add(this.checkBoxAutoTarget);
+            this.panelDetect.Controls.Add(this.checkBoxMotion);
+            this.panelDetect.Controls.Add(this.checkBoxDataset);
+            this.panelDetect.Controls.Add(this.checkBoxYolo);
             this.panelDetect.Controls.Add(this.listBoxTemplates);
             this.panelDetect.Controls.Add(this.pictureBoxTemplate);
 
@@ -467,6 +473,23 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             this.checkBoxAutoTarget.Location = new System.Drawing.Point(248, 30);
             this.checkBoxAutoTarget.Text     = "Auto-target";
             this.checkBoxAutoTarget.Font     = new System.Drawing.Font("Segoe UI", 8.5F);
+
+            this.checkBoxMotion.AutoSize = true;
+            this.checkBoxMotion.Location = new System.Drawing.Point(12, 124);
+            this.checkBoxMotion.Text     = "Motion detect (no templates needed)";
+            this.checkBoxMotion.Font     = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.checkBoxMotion.Checked  = true;
+
+            this.checkBoxDataset.AutoSize = true;
+            this.checkBoxDataset.Location = new System.Drawing.Point(280, 124);
+            this.checkBoxDataset.Text     = "Collect screens";
+            this.checkBoxDataset.Font     = new System.Drawing.Font("Segoe UI", 8.5F);
+
+            this.checkBoxYolo.AutoSize = true;
+            this.checkBoxYolo.Location = new System.Drawing.Point(12, 150);
+            this.checkBoxYolo.Text     = "AI detect (neural net — best targeting)";
+            this.checkBoxYolo.Font     = new System.Drawing.Font("Segoe UI", 8.5F);
+            this.checkBoxYolo.Checked  = true;
 
             this.listBoxTemplates.Location              = new System.Drawing.Point(12, 58);
             this.listBoxTemplates.Size                  = new System.Drawing.Size(216, 58);
@@ -527,6 +550,9 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         private System.Windows.Forms.CheckBox       checkBoxWnd3;
         private System.Windows.Forms.ComboBox       comboBoxWindow3;
         private System.Windows.Forms.Button         buttonPickWindow3;
+        private System.Windows.Forms.CheckBox       checkBoxMotion;
+        private System.Windows.Forms.CheckBox       checkBoxDataset;
+        private System.Windows.Forms.CheckBox       checkBoxYolo;
         private System.Windows.Forms.Panel          panelKeys;
         private System.Windows.Forms.Panel          panelTiming;
         private System.Windows.Forms.Panel          panelButtons;

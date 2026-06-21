@@ -52,6 +52,8 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         }
 
         [DllImport("user32.dll")] public static extern bool   ScreenToClient(IntPtr hWnd, ref POINT lpPoint);
+        [DllImport("user32.dll")] public static extern bool   ClientToScreen(IntPtr hWnd, ref POINT lpPoint);
+        [DllImport("user32.dll")] public static extern bool   GetClientRect(IntPtr hWnd, out RECT lpRect);
         [DllImport("user32.dll")] public static extern bool   GetWindowRect(IntPtr hWnd, out RECT lpRect);
         [DllImport("user32.dll")] public static extern bool   SetForegroundWindow(IntPtr hWnd);
         [DllImport("user32.dll")] public static extern bool   BringWindowToTop(IntPtr hWnd);

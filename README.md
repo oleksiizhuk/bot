@@ -1,3 +1,5 @@
+WSL
+claude --continue
 # RF Auto Loot
 
 Automated looting and mob killing for RF Online.  
@@ -11,7 +13,7 @@ Keystrokes and mouse clicks are sent **directly to the game window** — other a
 - **Visual Studio 2017–2022** (any edition, including Community)  
   or [Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022)
 
-NuGet packages are already included in the `packages/` folder — no internet needed.
+NuGet packages arпe already included in the `packages/` folder — no internet needed.
 
 ---
 

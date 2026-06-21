@@ -53,14 +53,16 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             Win32.GetCursorPos(out saved);
 
             Win32.SetForegroundWindow(hwnd);
-            System.Threading.Thread.Sleep(20);
+            System.Threading.Thread.Sleep(40);
             Win32.SetCursorPos(screenX, screenY);
+            System.Threading.Thread.Sleep(25);          // let the game register the hover
 
             uint dn = rightButton ? Win32.MOUSEEVENTF_RIGHTDOWN : Win32.MOUSEEVENTF_LEFTDOWN;
             uint up = rightButton ? Win32.MOUSEEVENTF_RIGHTUP   : Win32.MOUSEEVENTF_LEFTUP;
             Win32.mouse_event(dn, 0, 0, 0, 0);
-            System.Threading.Thread.Sleep(30);
+            System.Threading.Thread.Sleep(45);           // hold long enough to count as a click
             Win32.mouse_event(up, 0, 0, 0, 0);
+            System.Threading.Thread.Sleep(25);           // settle before snapping cursor back
 
             Win32.SetCursorPos(saved.X, saved.Y);
         }

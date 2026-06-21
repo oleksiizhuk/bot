@@ -75,6 +75,7 @@
     <Compile Include="InputSender.cs" />
     <Compile Include="LootBot.cs" />
     <Compile Include="MobDetector.cs" />
+    <Compile Include="YoloDetector.cs" />
     <Compile Include="ScreenCapture.cs" />
     <Compile Include="SnipOverlay.cs" />
     <Compile Include="Program.cs" />

@@ -17,7 +17,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         // Convert System.Drawing.Bitmap (GAC) to Mat without BitmapConverter.
         // BitmapConverter expects System.Drawing.Common (NuGet), which conflicts
         // with the .NET Framework GAC System.Drawing — different assemblies, same type name.
-        private static Mat BitmapToMat(System.Drawing.Bitmap bmp)
+        internal static Mat BitmapToMat(System.Drawing.Bitmap bmp)
         {
             var rect = new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height);
             var bd   = bmp.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
@@ -48,13 +48,89 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             _list.Clear();
         }
 
+        // Motion detection: mobs move, terrain is static. Diffs two frames
+        // ~400 ms apart and returns the moving blob closest to screen centre
+        // (closest mob to the character). Template-free. Blocks the calling
+        // thread for the capture interval — call from a background task.
+        public System.Drawing.Point? FindByMotionScreenPoint(IntPtr hwnd)
+        {
+            Win32.RECT wr;
+            if (!ScreenCapture.GetClientScreenRect(hwnd, out wr)) return null;
+
+            Mat g1 = CaptureGray(hwnd);
+            if (g1 == null) return null;
+            System.Threading.Thread.Sleep(400);
+            Mat g2 = CaptureGray(hwnd);
+            if (g2 == null) { g1.Dispose(); return null; }
+
+            using (g1)
+            using (g2)
+            using (var diff = new Mat())
+            {
+                if (g1.Size() != g2.Size()) return null; // window resized mid-capture
+
+                Cv2.Absdiff(g1, g2, diff);
+                Cv2.Threshold(diff, diff, 22, 255, ThresholdTypes.Binary);
+                using (var kernel = Cv2.GetStructuringElement(MorphShapes.Rect, new Size(7, 7)))
+                    Cv2.Dilate(diff, diff, kernel);
+
+                int w  = diff.Cols, h = diff.Rows;
+                int cx = w / 2,     cy = h / 2;
+
+                // Skip HUD zones: top bars, bottom chat/inventory, side panels.
+                var roi = new Rect((int)(w * 0.08), (int)(h * 0.12),
+                                   (int)(w * 0.84), (int)(h * 0.56));
+
+                Point[][]        contours;
+                HierarchyIndex[] hier;
+                using (var roiMat = new Mat(diff, roi))
+                    Cv2.FindContours(roiMat, out contours, out hier,
+                        RetrievalModes.External, ContourApproximationModes.ApproxSimple);
+
+                double bestDist = double.MaxValue;
+                int bx = 0, by = 0;
+
+                foreach (var c in contours)
+                {
+                    if (Cv2.ContourArea(c) < 60) continue; // capture noise
+                    var r  = Cv2.BoundingRect(c);
+                    int mx = roi.X + r.X + r.Width  / 2;
+                    int my = roi.Y + r.Y + r.Height / 2;
+
+                    double dx = mx - cx, dy = my - cy;
+                    double dist = Math.Sqrt(dx * dx + dy * dy);
+                    if (dist < 70) continue; // own character animating at centre
+
+                    if (dist < bestDist) { bestDist = dist; bx = mx; by = my; }
+                }
+
+                if (bestDist == double.MaxValue) return null;
+                return new System.Drawing.Point(wr.Left + bx, wr.Top + by);
+            }
+        }
+
+        private static Mat CaptureGray(IntPtr hwnd)
+        {
+            using (var bmp = ScreenCapture.CaptureWindow(hwnd))
+            {
+                if (bmp == null) return null;
+                using (var m = BitmapToMat(bmp))
+                {
+                    var gray = new Mat();
+                    Cv2.CvtColor(m, gray, ColorConversionCodes.BGR2GRAY);
+                    Cv2.GaussianBlur(gray, gray, new Size(5, 5), 0);
+                    return gray;
+                }
+            }
+        }
+
         // Returns screen coordinates of best match, or null if below threshold.
         public System.Drawing.Point? FindBestScreenPoint(IntPtr hwnd)
         {
             if (_list.Count == 0) return null;
 
             Win32.RECT wr;
-            Win32.GetWindowRect(hwnd, out wr);
+            if (!ScreenCapture.GetClientScreenRect(hwnd, out wr)) return null;
 
             using (var bmp = ScreenCapture.CaptureWindow(hwnd))
             {
