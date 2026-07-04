@@ -10,7 +10,12 @@ namespace Auto_Loot_RF_by_Yasir_Haq
     // centre. Single class (0 = mob). Output tensor: [1, 5, 8400].
     internal sealed class YoloDetector : IDisposable
     {
-        private const int InputSize = 640;
+        // Square size the frame is letter-boxed to before inference. MUST equal
+        // the imgsz the Colab script exported the ONNX at. Live mobs are ~40px in
+        // a 1600-wide frame; at 640 they shrink to ~16px (below YOLOv8n's floor),
+        // so we run at 960 (~24px). The export uses dynamic axes, so a model
+        // exported at a different size still runs (Detect fails safe if not).
+        public int InputSize { get; set; }
 
         private readonly Net _net;
         // CvDnn.Net.Forward is not thread-safe; several LootBots (one per game
@@ -32,13 +37,14 @@ namespace Auto_Loot_RF_by_Yasir_Haq
 
         public YoloDetector(string onnxPath)
         {
+            InputSize         = 960;     // must match Colab export imgsz
             Confidence        = 0.20f;   // model is weak; lower bar to catch more
             NmsThreshold      = 0.45f;
             // Player is always at screen centre and is bigger than the old 0.10
             // radius, so detections on its body edges were being clicked ("self
             // clicks"). 0.18 of the smaller side covers the player sprite while
             // still leaving most off-centre mobs clickable.
-            PlayerExcludeFrac = 0.18f;
+            PlayerExcludeFrac = 0.22f;   // matches LootBot.PlayerFrac; covers the big player sprite
             _net = CvDnn.ReadNetFromOnnx(onnxPath);
             _net.SetPreferableBackend(Backend.OPENCV);
             _net.SetPreferableTarget(Target.CPU);
@@ -135,8 +141,10 @@ namespace Auto_Loot_RF_by_Yasir_Haq
                         new Size(InputSize, InputSize), new Scalar(), true, false))
                 lock (_gate)
                 {
+                  try
+                  {
                     _net.SetInput(blob);
-                    using (var output = _net.Forward())   // [1, 5, 8400]
+                    using (var output = _net.Forward())   // [1, 5, N]
                     {
                         int rows = output.Size(1);         // 5  (cx,cy,w,h,score)
                         int cols = output.Size(2);         // 8400 anchors
@@ -188,6 +196,14 @@ namespace Auto_Loot_RF_by_Yasir_Haq
                             }
                         }
                     }
+                  }
+                  catch (Exception)
+                  {
+                      // Shape mismatch (model exported at another imgsz) or any
+                      // DNN error: fail safe to "no detections" so combat falls
+                      // through to motion instead of the loop Task dying.
+                      LastMaxScore = 0f; LastRawCount = 0;
+                  }
                 }
             }
 

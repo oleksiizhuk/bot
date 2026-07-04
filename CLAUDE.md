@@ -32,11 +32,14 @@ Only MSBuild available: `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild
   loot key for `lootSec`. `FindMobs` prefers YOLO, falls through to motion/templates when
   YOLO returns empty. Writes diagnostics to `bin/Release/debug.log`; saves the frame fed to
   the net as `cap_debug.jpg` (iter==2).
-- `YoloDetector.cs` — loads ONNX via `CvDnn.ReadNetFromOnnx`, letterbox 640, output
-  [1,5,8400], NMS. `DetectScreenPoints(hwnd)` returns all mob points (screen coords, player
-  centre zone excluded by `PlayerExcludeFrac=0.18`). `Net.Forward` is wrapped in `lock` (3
-  windows share one Net; Forward is not thread-safe). `Confidence=0.20`. Diagnostic props:
-  `LastMaxScore/LastRawCount/LastOutRows/LastOutCols`.
+- `YoloDetector.cs` — loads ONNX via `CvDnn.ReadNetFromOnnx`, letterbox **960** (`InputSize`,
+  was 640 — live mobs are ~40px and 640 downscaled them to ~16px, below the net's floor; MUST
+  equal the Colab export imgsz, which is now 960 with dynamic axes). Output [1,5,N] parsed
+  dynamically (rows/cols from the Mat, so any imgsz works). `DetectScreenPoints(hwnd)` returns
+  all mob points (screen coords, player centre zone excluded by `PlayerExcludeFrac=0.18`).
+  `Net.Forward` wrapped in `lock` (3 windows share one Net; not thread-safe) AND in `try/catch`
+  → any shape/DNN error fails safe to "no detections" so the combat loop falls through to
+  motion instead of dying. `Confidence=0.20`. Diagnostics: `LastMaxScore/LastRawCount/LastOutRows/LastOutCols`.
 - `MobDetector.cs` — OpenCV motion (frame-diff 400ms) + template matching. `BitmapToMat`
   locks `Format24bppRgb` → BGR Mat (BlobFromImage swapRB=true → RGB, correct for YOLO).
 - `InputSender.cs` — keys (PostMessage+AttachThreadInput, background-safe); mouse Click
@@ -63,14 +66,27 @@ Goal: YOLOv8n ONNX to target mobs. Training is done by the USER in Google Colab
   255 boxes/105 imgs +35 backgrounds), retrained (SGD lr0=0.01 cos_lr 200ep patience=0
   close_mosaic=30 single_cls). Result mAP50 0.117 but **val maxconf up to 0.769** — alive,
   detects clear mobs on ~half of frames. Deployed with Confidence 0.20 + motion fallback.
+- **Live test 2026-06-21 19:09 (cap_debug.jpg looked at 2026-06-22):** loop WORKS — full
+  Acquire→Engage→Loot cycles with `mobs(kept)=1`, but `raw=0 maxScore≈0.01–0.06`, i.e. the
+  target comes from the MOTION fallback, not YOLO. The frame shows the bot UI is NOT over the
+  field (clean 1600×900); the mobs are real but **small (~40px) and tan-on-tan vs the desert
+  terrain** (low contrast). Root cause of dead YOLO refined: v3 was trained on `labels_big`
+  (boxes ≥~96px) so it can't see the ~40px live mobs, AND the 640 letterbox shrinks them to
+  ~16px. So the grind bot already works via motion; YOLO is the part still to fix.
+- **Resolution fix (2026-06-22):** raised inference + training to **imgsz 960** (mob ~24px
+  instead of ~16px). `YoloDetector.InputSize=960`; export now `dynamic=True`; Detect wrapped
+  in try/catch (fail safe → motion). `train_colab.py`: epochs 150, batch 8, mosaic=1.0
+  close_mosaic=20 copy_paste=0.3. C# COMPILES (verified via MSBuild; deploy copy was blocked
+  only because the app was running). NOT yet retrained/deployed — needs the user's Colab run.
 
 ## NEXT STEPS
-1. Live-test the v3 model in KILL+LOOT with **both** "AI detect" and "Motion detect" on.
-   Check `bin/Release/debug.log`: maxScore should now be 0.2–0.7 (was 0.014).
-2. For STABLE AI (not "every other frame"): recollect **300–600+ frames at 1600×900** with
-   the bot's own window OFF the game field (it covered half the screen in `cap_debug.jpg`),
-   label them **cleanly & consistently** (makesense.ai — tight boxes, no tiny specks, resolve
-   player-mount-vs-mob), then retrain.
+1. **Retrain at 960 (user, Colab):** rerun `training/train_colab.py` (now imgsz=960, dynamic
+   export) on the cleanest dataset available, download `mobs.onnx` → replace `bin/Release/mobs.onnx`,
+   close the running app, rebuild Release, live-test. debug.log `maxScore` should rise above
+   the ~0.06 noise floor if the higher resolution helps.
+2. For STABLE AI (not "every other frame"): recollect **300–600+ frames at 1600×900**, label
+   them **cleanly & consistently at the REAL (small) mob size** (makesense.ai — tight boxes,
+   keep the small mobs, no tiny specks, resolve player-mount-vs-mob), then retrain at 960.
 3. Planned combat upgrades (only #1 done): #2 survival (read player HP bar top-left, heal/flee
    on low HP — needs heal key), #3 loot confirmation (kill-counter OCR or target HP bar).
 4. Cleanup once happy: remove diagnostic logging + `SaveDebugCapture` from `LootBot`.

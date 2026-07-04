@@ -27,6 +27,11 @@ namespace Auto_Loot_RF_by_Yasir_Haq
         // Only mobs within this radius of screen centre are engaged → the bot no
         // longer runs across the map chasing far targets.
         private const double EngageFrac = 0.45;
+        // Detections within this radius of screen centre are the player's own
+        // character (camera is locked on it) and must never be acquired — the
+        // player sprite (mounted beast / MAU mech) is big, so this covers it.
+        // Enforced in the loop so it holds whichever detector produced the point.
+        private const double PlayerFrac = 0.22;
         // A locked target counts as alive while a detection stays within this
         // radius of its last seen position.
         private const double TolFrac = 0.16;
@@ -145,6 +150,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
                     int cenY    = (cr.Top  + cr.Bottom) / 2;
                     int minSide = Math.Min(cr.Right - cr.Left, cr.Bottom - cr.Top);
                     double engageR = minSide * EngageFrac;
+                    double playerR = minSide * PlayerFrac;
                     double tolR    = minSide * TolFrac;
 
                     List<Point> mobs = FindMobs(h);
@@ -166,7 +172,9 @@ namespace Auto_Loot_RF_by_Yasir_Haq
                     {
                         case State.Acquire:
                         {
-                            Point? best = NearestWithin(mobs, cenX, cenY, engageR);
+                            // Pick the nearest mob inside the engage ring but
+                            // OUTSIDE the player zone, so we never click ourselves.
+                            Point? best = NearestWithin(mobs, cenX, cenY, engageR, playerR);
                             if (best.HasValue)
                             {
                                 if (DatasetDir != null) SaveDatasetShot(h, DatasetDir);
@@ -194,7 +202,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
 
                         case State.Engage:
                         {
-                            Point? still = NearestWithin(mobs, targetX, targetY, tolR);
+                            Point? still = NearestWithin(mobs, targetX, targetY, tolR, 0);
                             if (still.HasValue)
                             {
                                 targetX = still.Value.X; targetY = still.Value.Y;
@@ -266,7 +274,9 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             return list;
         }
 
-        private static Point? NearestWithin(List<Point> pts, int x, int y, double maxR)
+        // Nearest point to (x,y) within maxR and at least minR away (minR rejects
+        // the player at screen centre during Acquire; pass 0 to disable).
+        private static Point? NearestWithin(List<Point> pts, int x, int y, double maxR, double minR)
         {
             double best = double.MaxValue;
             Point bp = Point.Empty;
@@ -275,7 +285,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
             {
                 double dx = p.X - x, dy = p.Y - y;
                 double d = Math.Sqrt(dx * dx + dy * dy);
-                if (d <= maxR && d < best) { best = d; bp = p; found = true; }
+                if (d >= minR && d <= maxR && d < best) { best = d; bp = p; found = true; }
             }
             if (found) return bp;
             return null;

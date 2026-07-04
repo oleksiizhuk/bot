@@ -76,6 +76,10 @@ namespace Auto_Loot_RF_by_Yasir_Haq
 
                 int w  = diff.Cols, h = diff.Rows;
                 int cx = w / 2,     cy = h / 2;
+                // Player sits at exact centre and animates constantly; its sprite
+                // (mounted beast / big MAU mech) is large, so exclude a generous
+                // radius or its moving legs/weapon get picked as the nearest blob.
+                double excludeR = Math.Min(w, h) * 0.22;
 
                 // Skip HUD zones: top bars, bottom chat/inventory, side panels.
                 var roi = new Rect((int)(w * 0.08), (int)(h * 0.12),
@@ -99,7 +103,7 @@ namespace Auto_Loot_RF_by_Yasir_Haq
 
                     double dx = mx - cx, dy = my - cy;
                     double dist = Math.Sqrt(dx * dx + dy * dy);
-                    if (dist < 70) continue; // own character animating at centre
+                    if (dist < excludeR) continue; // own character animating at centre
 
                     if (dist < bestDist) { bestDist = dist; bx = mx; by = my; }
                 }
